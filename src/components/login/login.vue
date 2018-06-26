@@ -42,28 +42,23 @@ export default {
           Toast('密码不能为空');
       }else{
         _this.$post(_this.GLOBAL.base_url + "login", {loginname: _this.phoneNum,password: _this.inputPwd})
+        // axios.post("/xxw/api/login", {loginname: _this.phoneNum,password: _this.inputPwd})
         .then(res => {
           console.log(res);
           if(res.code == 200){
-            Toast.success('登录成功');
+            Toast.success('登录成功,正在跳转...');
+            window.sessionStorage.setItem('token',res.data.token)
+            setTimeout(function(){
+              _this.$router.push({name:'home'})
+            },3000)
+          }else{
+            Toast(res.data.msg);
           }
         })
         .catch(err => {
           console.log(err);
         });
       }
-
-      // let data = qs.stringify(
-      //     {loginname: _this.phoneNum,password: _this.inputPwd}
-      // )
-      
-    // axios.post('http://garbage.xxw360.com/api/login',data)
-    //     .then(res => {
-    //       console.log(res);
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
     }
   }
 };
@@ -75,6 +70,9 @@ export default {
   overflow: hidden;
   .hvMiddle {
     margin-top: 100px;
+    .colorccc{
+      color: #ccc;
+    }
   }
   .btnWidth {
     width: 290px;

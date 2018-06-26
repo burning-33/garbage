@@ -7,7 +7,7 @@
     </div>
     <div class="banner">
       <van-swipe >
-        <van-swipe-item v-for="(image, index) in list.goods.imglist" :key="index">
+        <van-swipe-item v-if="list.goods.imglist" v-for="(image, index) in list.goods.imglist" :key="index">
           <img :src="image" alt="" class="bannerimg">
         </van-swipe-item>
       </van-swipe>
@@ -39,8 +39,8 @@
       <div class="time">{{list.comment.create_time}}</div>
     </div>
     <div class="xiangqing">商品详情</div>
-    <div class="productImg">
-      <div class="" v-html="list.goods.content"></div>
+    <div class="productImg" v-html="list.goods.content">
+      <!--<div class="fuwenben" v-html="list.goods.content"></div>-->
       <!--<img src="" alt="">-->
     </div>
     <div class="buy">
@@ -102,7 +102,7 @@
             </div>
           </div>
         </div>
-        <div class="sure">确定</div>
+        <div class="sure" @click="goOrder">确定</div>
       </div>
     </van-popup>
     <!--购物车-->
@@ -117,14 +117,19 @@
             <span @click="plus()">+</span>
           </div>
         </div>
-        <div class="hejiBox">合计：<span class="heji">￥30.00</span></div>
+        <div class="hejiBox">合计：<span class="heji">￥{{heji}}</span></div>
         <div class="btnBox">
           <div class="cancel" @click="cancels">取消</div>
           <div class="sure" @click="sure">确定</div>
         </div>
       </van-popup>
     </div>
-
+    <transition name="slide-fade">
+      <Ordersure
+        v-if="ordershow"
+        @orderfalse = 'orderfalse'
+      />
+    </transition>
   </div>
 </template>
 
@@ -134,11 +139,15 @@
   import { Toast } from 'vant';
   import { Dialog } from 'vant';
   import { Popup } from 'vant';
+  import Ordersure from '../Soncomponents/Ordersure'
   Vue.use(Popup);
   Vue.use(Swipe).use(SwipeItem);
   export default {
     name: 'Details',
     props:['imgid','detailsid'],
+    components:{
+      Ordersure,
+    },
     data() {
       return {
         list:'',
@@ -153,7 +162,9 @@
         unitPrice:'',//单价
         payment:'￥0.00',//实际付款
         discount:1,//优惠价格
-        cartMark:false
+        cartMark:false,
+        heji:'',//加入购物车合计
+        ordershow:false//购买订单详情
       }
     },
     created: function(){
@@ -168,32 +179,30 @@
     methods: {
       obj(){
         const selt = this;
-        console.log(selt.detailsid)
-        axios.get('http://garbage.xxw360.com/api/goods/' + selt.detailsid).then(function (res) {
-          console.log(res.data.data)
-          selt.list= res.data.data;
-          //规格分类
-          var arr=[];
-          for(var i =0;i < res.data.data.format.length;i++){
-            arr.push(res.data.data.format[i].name)
-          }
-          selt.fenlei = arr;
-          selt.yansefenlei = res.data.data.format[0].color;
-          // 单价默认值
-          selt.unitPrice = res.data.data.format[0].color[0].price;
-          // 判断是否点赞
-          if(res.data.data.star.commen == 0){
-            selt.zanactive = false
-          }else {
-            selt.zanactive = true
-          }
-        }).catch(function (err) {
-          console.error('请求错误')
-        })
+        selt.$fetch(selt.GLOBAL.base_url + 'goods/' + selt.detailsid)
+          .then((response) => {
+            console.log(response.data)
+            selt.list= response.data;
+            //规格分类
+            var arr=[];
+            for(var i =0;i < response.data.format.length;i++){
+              arr.push(response.data.format[i].name)
+            }
+            selt.fenlei = arr;
+            selt.yansefenlei = response.data.format[0].color;
+            // 单价默认值
+            selt.unitPrice = response.data.format[0].color[0].price;
+            selt.heji = response.data.format[0].color[0].price;
+            // 判断是否点赞
+            if(response.data.comment.star == 0){
+              selt.zanactive = false
+            }else {
+              selt.zanactive = true
+            }
+          })
       },
       // 加入购物车
       addCart(){
-        Toast('加入购物车成功');
         this.cartMark = true
         this.show1 = true
       },
@@ -205,11 +214,9 @@
       },
       // 颜色分类选择
       fenleiBtn(index){
-        console.log(index)
-        this.isActive = index
+        this.isActive = index;
         //单价
         this.unitPrice = this.yansefenlei[index].price;
-        console.log(this.unitPrice)
         //      计算总价
         this.paymentMoney()
       },
@@ -217,6 +224,11 @@
       fenleipreBtn(index){
         this.isActiveprive= index
         this.yansefenlei = this.list.format[index].color
+        this.isActive = 0;
+        //单价
+        this.unitPrice = this.yansefenlei[0].price;
+        //      计算总价
+        this.paymentMoney()
         console.log(this.yansefenlei)
       },
       //      计算总价
@@ -227,7 +239,7 @@
       },
       //实际付款
       paymentMoney(){
-        this.payment = this.allPrice - this.discount
+        this.payment = (this.allPrice - this.discount).toFixed(2)
       },
       //    减号
       reduce() {
@@ -238,10 +250,12 @@
         }
         //      计算总价
         this.paymentMoney()
+        this.heji = (this.unitPrice * this.num).toFixed(2);
       },
 //    加号
       plus() {
         this.num += 1;
+        this.heji = (this.unitPrice * this.num).toFixed(2);
 //      计算总价
         this.paymentMoney()
       },
@@ -256,6 +270,21 @@
       sure(){
         this.show1 = false
         this.cartMark = false
+        Toast('加入购物车成功');
+        const selt = this;
+        selt.$post(selt.GLOBAL.base_url + 'cart',{token:'352',a_id:'1'}
+            )
+          .then((response) => {
+            console.log(response)
+
+          })
+      },
+      orderfalse(){
+        this.ordershow = false
+      },
+      goOrder(){
+        this.show = false
+        this.ordershow = true
       }
     },
   }
@@ -286,6 +315,12 @@
         justify-content: center;
         padding: 10px 0;
         border-bottom: 1px solid #e8e8e8;
+        .add{
+          span{
+            font-size: 18px;
+            margin-right: 10px;
+          }
+        }
       }
       .h2{
         color: #73ab1d;
@@ -327,19 +362,19 @@
       }
     }
   }
-  .add{
-    span{
-      display: inline-block;
-      width: 30px;
-      height: 25px;
-      border: 1px solid #c0c0c0;
-      padding:0;
-      margin: 0;
-      line-height: 25px;
-      text-align: center;
-      font-size: 18px;
-    }
-  }
+  /*.add{*/
+    /*span{*/
+      /*display: inline-block;*/
+      /*width: 30px;*/
+      /*height: 25px;*/
+      /*border: 1px solid #c0c0c0;*/
+      /*padding:0;*/
+      /*margin: 0;*/
+      /*line-height: 25px;*/
+      /*text-align: center;*/
+      /*font-size: 18px;*/
+    /*}*/
+  /*}*/
   .mark{
     width: 100%;
     background: white;
@@ -640,6 +675,7 @@
     width: 100%;
     background: #ffffff;
     margin-bottom: 60px;
+    box-sizing: border-box;
   }
   .van-dialog__content .van-dialog__message{
     text-align: center;

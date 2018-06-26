@@ -68,7 +68,7 @@
       const selt = this;
       selt.$fetch(selt.GLOBAL.base_url + 'index')
         .then((response) => {
-          console.log(response)
+          console.log(response.data.goods)
           selt.images= response.data.banner
           selt.list = response.data.goods
         })

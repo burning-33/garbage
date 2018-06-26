@@ -7,9 +7,7 @@
     function settime(that) {
       if (time == 0) {
           that.is_show=true
-        that.setData({
-          getCodetext: "重新获取"
-        });
+        that.getCodetext="重新获取"
         time = 60;
         return;
       } else {

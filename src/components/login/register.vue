@@ -14,7 +14,7 @@
                     placeholder="请输入短信验证码"
                     icon="clear"
                     @click-icon="sms = ''">
-                    <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">获取验证码</van-button>
+                    <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
                     <van-button v-else slot="button" size="normal" type="primary" class="bg999">已发送{{last_time}}秒</van-button>
                 </van-field>
             </van-cell-group>
@@ -26,7 +26,7 @@
         </div>
         <div class="borderccc bR5 b-v-center btnWidth pg15">
             <p class="iconfont fs20 colorccc pr15">&#xe640;</p>
-            <input class="flex" v-model="secondPwd" type="password" placeholder="请输入密码(6-12位数字、字母)"/>
+            <input class="flex" v-model="secondPwd" type="password" placeholder="再次输入密码(6-12位数字、字母)"/>
         </div>
         <button @click="register" class="bR5 bgGreen colorw fs18 btnLogin">注册</button>
     </div>
@@ -45,7 +45,8 @@ export default {
       secondPwd: "",
       //倒计时
       is_show: true,
-      last_time:''
+      last_time:'',
+      getCodetext:'获取验证码'
     };
   },
   computed: {},
@@ -58,21 +59,21 @@ export default {
       } else if (!regPhone.test(_this.phoneNum)) {
         Toast("请输入正确的手机号");
       } else {
-        //  _this
-        // .$post(_this.GLOBAL.base_url + "sms", {
-        //   mobile: _this.phoneNum,
-        //   type:'register'
-        // })
-        // .then(res => {
-        //   console.log(res);
-          // if(res.code == 200){
+         _this
+        .$fetch(_this.GLOBAL.base_url + "sms", {
+          mobile: _this.phoneNum,
+          type:'register'
+        })
+        .then(res => {
+          console.log(res);
+          if(res.code == 200){
             _this.is_show = !_this.is_show
             _this.GLOBAL.countdown(_this);
-          // }
-        // })
-        // .catch(err => {
-        //   console.log(err);
-        // });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
       }
     },
     register() {
@@ -97,6 +98,8 @@ export default {
           console.log(res);
           if(res.code == 200){
             Toast.success('注册成功');
+          }else{
+            Toast(res.msg)
           }
         })
         .catch(err => {
@@ -127,7 +130,7 @@ export default {
   .van-cell {
     padding: 0 !important;
   }
-  .van-field .van-cell__value {
+  .van-cell__title, .van-cell__value{
     display: flex;
   }
   .van-button {

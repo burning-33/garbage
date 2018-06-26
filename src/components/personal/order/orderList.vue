@@ -237,6 +237,12 @@ export default {
     width: 75px;
     height: 25px;
   }
+  .borderR{
+    border: 1px solid #fb4e26;
+  }
+  .border666{
+    border: 1px solid #666;
+  }
 }
 </style>
 

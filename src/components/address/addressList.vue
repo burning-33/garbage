@@ -14,7 +14,8 @@
             </div>
         </div>
     </div>
-    <button @click="addAddress" class="bR5 bgGreen colorw fs18 btnAdd"><span class="iconfont mr10 colorw">&#xe604;</span> 添加收货地址</button>
+    <button @click="addAddress" :class="addressInfo.length == 0?'bR5 bgGreen colorw fs18 noAdd':'bR5 bgGreen colorw fs18 btnAdd'"><span class="iconfont mr10 colorw">&#xe604;</span> 添加收货地址</button>
+    <!-- <div v-if="noAddress" class="tc mt100">还没有添加收货地址</div> -->
   </div>
 </template>
 
@@ -26,37 +27,61 @@ export default {
     return {
       addSelected: 0,
       addressInfo: [
-        {
-          name: "1李易",
-          phone: "18853761876",
-          province: "四川省",
-          city: "自贡市",
-          county: "自流井区",
-          details: "东方广场1139号向华小区东门13栋1单元1503"
-        },
-        {
-          name: "2李易",
-          phone: "18853761876",
-          province: "四川省",
-          city: "自贡市",
-          county: "自流井区",
-          details: "东方广场1139号向华小区东门13栋1单元1503"
-        },
-        {
-          name: "3李易",
-          phone: "18853761876",
-          province: "四川省",
-          city: "自贡市",
-          county: "自流井区",
-          details: "东方广场1139号向华小区东门13栋1单元1503"
-        }
+        // {
+        //   name: "1李易",
+        //   phone: "18853761876",
+        //   province: "四川省",
+        //   city: "自贡市",
+        //   county: "自流井区",
+        //   details: "东方广场1139号向华小区东门13栋1单元1503"
+        // },
+        // {
+        //   name: "2李易",
+        //   phone: "18853761876",
+        //   province: "四川省",
+        //   city: "自贡市",
+        //   county: "自流井区",
+        //   details: "东方广场1139号向华小区东门13栋1单元1503"
+        // },
+        // {
+        //   name: "3李易",
+        //   phone: "18853761876",
+        //   province: "四川省",
+        //   city: "自贡市",
+        //   county: "自流井区",
+        //   details: "东方广场1139号向华小区东门13栋1单元1503"
+        // }
       ]
     };
   },
   created() {
     //   获取地址列表
+    this.getAddList();
+
   },
   methods: {
+    getAddList(){
+      let _this = this;
+      const toast1 = Toast.loading({
+        mask: true,
+        message: '加载中...'
+      })
+      // console.log(sessionStorage.getItem('token'),'token');
+      _this.$fetch(_this.GLOBAL.base_url + "address", {token: sessionStorage.getItem('token')})
+      // axios.get( "/xxw/api/address", {token: sessionStorage.getItem('token')})
+        .then(res => {
+          console.log('地址列表',res);
+          if(res.code == 200){
+            toast1.clear();
+            _this.addressInfo = res.data;
+          }else{
+            Toast(res.msg);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     changeDefault(index) {
       console.log(index);
       if (this.addSelected == index) {
@@ -117,9 +142,13 @@ export default {
 
 <style lang="less" scoped>
 .address {
+  position: relative;
   background: #f9f9f9;
   overflow: hidden;
   height: 100%;
+  .mt100{
+    margin-top: 100px;
+  }
   .fs18 {
     font-size: 18px;
   }
@@ -131,6 +160,12 @@ export default {
     height: 44px;
     margin: 0 auto;
     margin-top: 55px;
+  }
+  .noAdd{
+    width: 290px;
+    height: 44px;
+    margin: 0 auto;
+    margin-top: 150px;
   }
   .defaultStyle {
     color: #fff;

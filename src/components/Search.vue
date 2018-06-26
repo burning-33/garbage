@@ -105,20 +105,31 @@
 
     methods: {
       huoqu(){
+        // const selt = this;
+        // var neirong = selt.selt
+        // axios.get('http://garbage.xxw360.com/api/goods',{params:
+        //     {
+        //       keyword:neirong,
+        //       order:this.axioscanshu
+        //     },
+        // })
+        //   .then(function (res) {
+        //   console.log(res.data)
+        //   selt.list = res.data.data
+        // }).catch(function (err) {
+        //   console.error('请求错误')
+        // })
         const selt = this;
         var neirong = selt.selt
-        axios.get('http://garbage.xxw360.com/api/goods',{params:
+        selt.$fetch(selt.GLOBAL.base_url + 'goods',{params:
             {
               keyword:neirong,
               order:this.axioscanshu
-            },
-        })
-          .then(function (res) {
-          console.log(res.data)
-          selt.list = res.data.data
-        }).catch(function (err) {
-          console.error('请求错误')
-        })
+            },})
+          .then((response) => {
+            console.log(response)
+            selt.list = response.data
+          })
       },
       // 分类查询点击
       actClass(e){

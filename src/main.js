@@ -6,9 +6,11 @@ import router from './router'
 import Vant from 'vant';
 import axios from 'axios'
 import {post,fetch,patch,put} from './util/common'
+import Clipboard from 'clipboard';
 import global_ from './components/Global'//引用文件
 Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
-//定义全局变量
+// axios.defaults.baseURL ='http://garbage.xxw360.com/api/'; 
+// 定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$fetch=fetch;
 Vue.prototype.$patch=patch;

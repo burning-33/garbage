@@ -59,7 +59,7 @@ export default {
         textR: '******',
         img: false,
         arrowR: true,
-        router: ""
+        router: {name:'CheckCode',params:{title:'修改密码'}}
       }]
     };
   },

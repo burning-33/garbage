@@ -40,9 +40,7 @@ export default {
   },
   methods:{
     hideFooter(router){
-       if (router.meta.showFooter !== undefined) {
-          this.isShow = router.meta.showFooter !== undefined ? router.meta.showFooter : true;
-        } 
+        this.isShow = router.meta.showFooter !== undefined ? router.meta.showFooter : true;
     },
     returnLast(){
       window.history.length > 1

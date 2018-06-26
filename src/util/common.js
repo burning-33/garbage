@@ -12,14 +12,17 @@ axios.defaults.baseURL ='';
 axios.interceptors.request.use(
   config => {
     // const token = getCookie('名称');注意使用的时候需要引入cookie方法，推荐js-cookie
-
-    config.data = JSON.stringify(config.data);
-    console.log(config.data);
+    if(config.method === 'post'){
+      config.data = qs.stringify(config.data);
+    }else{
+      config.data = JSON.stringify(config.data);
+    }
     config.headers = {
       'Content-Type':'application/x-www-form-urlencoded'
     }
     // if(token){
     //   config.params = {'token':token}
+    //   console.log(config.params);
     // }
     return config;
   },
@@ -74,7 +77,7 @@ export function fetch(url,params={}){
  * @param data
  * @returns {Promise}
  */
-
+//
 export function post(url,data = {}){
   return new Promise((resolve,reject) => {
     axios.post(url,data)
@@ -85,6 +88,22 @@ export function post(url,data = {}){
       })
   })
 }
+// export function post(url,param){
+//   return new Promise((resolve,reject) => {
+//     axios({
+//       method: 'post',
+//       url: url,
+//       data: param,
+//       cancelToken: new CancelToken(c => {
+//         cancel = c
+//       })
+//     }).then(res => {
+//       resolve(res)
+//     }).catch(error => {
+//       reject(error)
+//     })
+//   })
+// }
 
 /**
  * 封装patch请求

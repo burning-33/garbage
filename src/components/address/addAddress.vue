@@ -17,7 +17,6 @@
         </div>
         <button @click="confirm" class="bR5 bgGreen colorw fs18 btnAdd">{{edit?'保存':'添加'}}</button>
         <van-area v-show="areaShow" :area-list="areaList" :value='region' @confirm='getArea' @change="change" @cancel="cancel"/>
-        <alert v-show="isAlert" />
         <ymDialog ref="dialog" :modal="modal" />
     </div>
     
@@ -30,7 +29,12 @@ export default {
   data() {
     return {
       edit: false,
-      areaList: AreaList,
+      // areaList: {
+      //   'province_list':{},
+      //   'city_list':{},
+      //   'county_list':{}
+      // },
+      areaList:AreaList,
       username: "",
       phone: "",
       region: "",
@@ -93,10 +97,31 @@ export default {
       }
     },
     selectRegion() {
-      this.areaShow = true;
+      let _this = this;
+      _this.$fetch(_this.GLOBAL.base_url + "region")
+      .then(res => {
+        console.log('全部区域',res)
+        if(res.code == 200){
+          // for(let i=0;i<res.data.length;i++){
+          //   _this.areaList.province_list[res.data[i].id] = res.data[i].name//省
+          //   for(let j= 0;j<res.data[i]._child[j].length;j++){
+          //     _this.areaList.city_list[res.data[i]._child[j].id] = res.data[i]._child[j].name//市
+          //     for(let k=0;k<res.data[i]._child[j]._child[k].length;k++){
+          //       _this.areaList.county_list[res.data[i]._child[j]._child[k].id] = res.data[i]._child[j]._child[k].name//区
+          //     }
+          //   }
+          // }
+          console.log(_this.areaList);
+          this.areaShow = true;
+        }
+      }).catch(err => {
+        // console.log(err)
+      })
+
     },
-    getArea() {
-      console.log(this.region);
+    getArea(e) {
+      console.log(e);
+      this.areaShow = false;
     },
     change() {},
     cancel() {

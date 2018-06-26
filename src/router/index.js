@@ -8,6 +8,8 @@ import Me from '@/components/Me'
 import login from '@/components/login/login'
 import register from '@/components/login/register'
 import PersonalInfo from '@/components/personal/PersonalInfo'
+import CheckCode from '@/components/personal/CheckCode'
+import setPwd from '@/components/personal/setPwd'
 import addressList from '@/components/address/addressList'
 import addAddress from '@/components/address/addAddress'
 import editAddress from '@/components/address/addAddress'
@@ -60,8 +62,19 @@ export default new Router({
       name: 'PersonalInfo',
       component: PersonalInfo,
       meta:{showFooter:false}
-    }
-    ,
+    },
+    {
+      path: '/Me/PersonalInfo/CheckCode',
+      name: 'CheckCode',
+      component: CheckCode,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/PersonalInfo/setPwd',
+      name: 'setPwd',
+      component: setPwd,
+      meta:{showFooter:false}
+    },
     {
       path: '/Me/addressList',
       name: 'addressList',
