@@ -1,76 +1,80 @@
 <template>
     <div class="personalInfo"> 
-        <div v-for="(item,index)  in lrObj" :key="index">
-          <lrLayout :obj="item" :border='true'/>          
-        </div>
+        <router-link :to="{name:'changeImg',params:{title:'更换头像',originalInfo:userInfo}}" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">头像</p>
+          <div class="imgHeader"><img src="../../assets/logo.png" alt=""></div>  
+          <p  class="mr10 ml5"><span class="iconfont">&#xe60d;</span></p>     
+        </router-link>
+        <router-link :to="{name:'nikename',params:{title:'修改昵称',originalInfo:userInfo}}" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">昵称</p>
+          <p  class='mr10 ml5'>{{userInfo.nickname}}</p>     
+          <p  class="mr10 ml5"><span class="iconfont">&#xe60d;</span></p>     
+        </router-link>
+        <router-link to="" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">会员号</p>
+          <p  class='mr10 ml5'>{{userInfo.id}}</p>        
+        </router-link>
+        <router-link to="" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">注册时间</p>
+          <p  class='mr10 ml5'>{{userInfo.regdate}}</p>        
+        </router-link>
+        <router-link :to="{name:'editPhone',params:{title:'修改手机号'}}" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">手机号</p>
+          <p  class='mr10 ml5'>{{userInfo.mobile}}</p>     
+          <p  class="mr10 ml5"><span class="iconfont">&#xe60d;</span></p>     
+        </router-link>
+        <router-link to="" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">推荐码</p>
+          <p  class='mr10 ml5'>{{userInfo.recommendation_code}}</p>         
+        </router-link>
+        <router-link to="" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">我的邀请码</p>
+          <p  class='mr10 ml5'>{{userInfo.invitation_code}}</p>          
+        </router-link>
+        <router-link :to="{name:'CheckCode',params:{title:'修改密码'}}" tag="div" class="lrborder b-v-center pg10">
+          <p class="flex">修改密码</p>
+          <p  class='mr10 ml5'>******</p>     
+          <p  class="mr10 ml5"><span class="iconfont">&#xe60d;</span></p>     
+        </router-link>
     </div>
 </template>
 <script>
-import lrLayout from "./lrLayout.vue";
 export default {
-  name: "Me",
+  name: "personalInfo",
   data() {
     return {
-      lrObj: [{
-        textL: "头像",
-        textR: require("../../assets/logo.png"),
-        img: true,
-        arrowR: true,
-        router: ""
-      }, {
-        textL: "昵称",
-        textR: 'chengsuansun',
-        img: false,
-        arrowR: true,
-        router: ""
-      }, {
-        textL: "会员号",
-        textR: '1515151',
-        img: false,
-        arrowR: false,
-        router: ""
-      },
-      {
-        textL: "注册时间",
-        textR: '2018-02-11 13:32',
-        img: false,
-        arrowR: true,
-        router: ""
-      }, {
-        textL: "手机号",
-        textR: '15151515151',
-        img: false,
-        arrowR: true,
-        router: ""
-      }, {
-        textL: "推荐码",
-        textR: '1515151',
-        img: false,
-        arrowR: false,
-        router: ""
-      },{
-        textL: "我的邀请码",
-        textR: '342555',
-        img: false,
-        arrowR: false,
-        router: ""
-      }, {
-        textL: "修改密码",
-        textR: '******',
-        img: false,
-        arrowR: true,
-        router: {name:'CheckCode',params:{title:'修改密码'}}
-      }]
+      userInfo:{}
     };
   },
   components: {
-    lrLayout
   },
-  computed: {},
+  created() {
+    let _this = this;
+    _this.$fetch(_this.GLOBAL.base_url+'member',{token: _this.GLOBAL.token})
+      .then(res => {
+            console.log('个人信息',res);
+            if (res.code == 200) {
+              _this.userInfo = res.data.user;
+            }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
   methods: {}
 };
 </script>
 <style lang="less" scoped>
+.imgHeader {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #000;
+}
+.lrborder + .lrborder {
+  border-top: 1px solid #eee;
+}
 </style>
 
 

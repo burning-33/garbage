@@ -3,11 +3,11 @@
         <div class="dialog-box bgw bR5">
             <div class="mat">
                 <p class="colorb fs16 btnDel">{{_modal.contentText}}</p>
-                <div class="b-v-center">
-                    <div class="flex btnB b-center">
+                <div class="b-center">
+                    <div class="flex btnB b-center" v-if="_modal.showCancel">
                       <button class="bgbbb colorw btnW bR5 " @click="close">{{_modal.cancelText}}</button>
                     </div>
-                    <div class="flex btnB b-center">
+                    <div class="flex btnB b-center" v-if="_modal.showConfirm">
                       <button :class="_modal.red?'bgRed colorw btnW bR5 flex':'bgGreen colorw btnW bR5 flex'" @click="submit">{{_modal.confirmText}}</button>
                     </div>
                 </div>
@@ -32,7 +32,9 @@ export default {
           _modal = {
             contentText: typeof _modal.contentText === 'undefined' ? '' : _modal.contentText,
             cancelText: typeof _modal.cancelText !== 'undefined' ? _modal.cancelText : '取消',
-            confirmText: typeof _modal.confirmText !== 'undefined' ? _modal.confirmText : '确定'
+            confirmText: typeof _modal.confirmText !== 'undefined' ? _modal.confirmText : '确定',
+            showCancel: typeof _modal.showCancel !== 'undefined' ? _modal.showCancel : true,
+            showConfirm: typeof _modal.showConfirm !== 'undefined' ? _modal.showConfirm : true
           };
           return _modal;
      }
@@ -93,6 +95,9 @@ export default {
     .btnW {
       width: 65px;
       height: 28px;
+    }
+    .btnB {
+      max-width: 60px;
     }
     .btnB+ .btnB {
       margin-left: 15px;  

@@ -4,7 +4,7 @@
       <div class="searchHeader">
         <input type="text" class="sousuo" v-model="neirong">
         <van-icon name="search" class="sousuoIcon" />
-        <van-icon name="clear" v-show="clearShow" class="clear"/>
+        <van-icon name="clear" @click="clearneirong" v-show="clearShow" class="clear"/>
       </div>
       <span class="quxiao" @click="searchBtn">搜索</span>
     </div>
@@ -99,11 +99,24 @@
     mounted: function () {
       this.huoqu()
     },
+    computed:{
+      clearShows(){
+        if(this.neirong == ''){
+            this.clearShow = false
+        }else {
+          this.clearShow = true
+        }
+      }
+    },
     directives: {
       WaterfallLower: Waterfall('lower')
     },
 
     methods: {
+      clearneirong(){
+        this.neirong=''
+        this.clearShow = false
+      },
       huoqu(){
         // const selt = this;
         // var neirong = selt.selt

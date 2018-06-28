@@ -25,15 +25,17 @@ export default {
       modal: {
         confirmText: "ok",
         contentText: "密码修改成功",
-        red: false
+        red: false,
+        showCancel: false
       }
     };
   },
   created(){
       let _this = this;
+    
       _this
         .$fetch(_this.GLOBAL.base_url + "pwd", {
-          mobile: _this.phoneNum,
+          mobile: _this.GLOBAL.mobile,
           code: _this.$route.params.code
         })
         .then(res => {
@@ -68,10 +70,9 @@ export default {
           if(res.code == 200){
             _this.$refs.dialog.confirm().then(()=>{
                 console.log(123)
-                // _this.$router.push(
-                //     {name:'CheckCode',params:{title:'修改密码'}}
-                // )
-                _this.$router.go(-2)
+                _this.$router.replace(
+                    {name:'PersonalInfo',params:{title:'个人信息'}}
+                )
             }).catch(()=>{
                 console.log(456)
             })

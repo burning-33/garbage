@@ -2,14 +2,14 @@
     <div class="addAddress">
         <div  class="mk-cell-list">
             <van-cell-group>
-                    <van-field  v-model="username" label="收货人：" />
+                    <van-field v-model="username" label="收货人：" />
                     <van-field v-model="phone" label="联系方式："/>
             </van-cell-group>
            <div class="mk-cell mk-cell-access">
                 <div class="mk-cell-bd">
                 <div class="mk-label">所在地区：</div>
                 </div>
-                <div class="mk-cell-ft" @click="selectRegion">{{area}}</div>
+                <div class="mk-cell-ft" @click="selectRegion">{{location}}</div>
             </div>
             <van-cell-group>
             <van-field v-model="details" label="详细地址：" type="textarea" placeholder="街道、楼牌号等" rows="1" autosize/>
@@ -25,6 +25,7 @@
 import alert from "../common/alert";
 import ymDialog from "../common/dialog";
 import AreaList from "../../assets/js/area.js";
+import { Toast } from "vant";
 export default {
   data() {
     return {
@@ -38,7 +39,7 @@ export default {
       username: "",
       phone: "",
       region: "",
-      area: "",
+      location: "",
       details: "",
       areaShow: false,
       isAlert: true,
@@ -46,7 +47,10 @@ export default {
         confirmText: "删除",
         contentText: "确认删除",
         red: true
-      }
+      },
+      backArea:[],
+      areaId:null,
+      editId:null
     };
   },
   created() {
@@ -56,10 +60,12 @@ export default {
       _this.edit = true;
       console.log("修改地址");
       let obj = _this.$route.params.editObj;
+      _this.editId = obj.id;
+      _this.areaId = obj.address_id;
       _this.username = obj.name;
       _this.phone = obj.phone;
-      _this.details = obj.details;
-      _this.area = obj.province + obj.city + obj.county;
+      _this.details = obj.content;
+      _this.location = obj.address;
     } else {
       _this.edit = false;
     }
@@ -70,12 +76,7 @@ export default {
   },
   methods: {
     confirm() {
-      // this.$refs.dialog.confirm().then(()=>{
-      //     console.log(123)
-      // }).catch(()=>{
-      //     console.log(456)
-      // })
-
+      let _this=this;
       let regPhone = /^[1][3,4,5,7,8][0-9]{9}$/;
       if (this.username == "") {
         // this.isAlert = true;
@@ -89,38 +90,135 @@ export default {
       } else if (_this.details == "") {
         Toast("详细地址不能为空");
       } else {
-        if (edit) {
+        if (_this.edit) {
             //编辑保存
+             _this.$put(_this.GLOBAL.base_url + "address", {
+              token: _this.GLOBAL.token,
+              id:Number(_this.editId),
+              name:_this.username,
+              phone:_this.phone,
+              address_id:Number(_this.areaId),
+              content:_this.details
+              })
+              .then(res => {
+                console.log('修改地址',res);
+                if(res.code == 200){
+                  Toast('修改成功');
+                  setTimeout(function(){
+                    _this.$router.replace({
+                      name: "addressList",
+                      params: { title: "地址管理" }
+                    });
+                  },2000)
+                  
+                }else{
+                  Toast(res.msg);
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              });
         } else {
             // 增加保存
+          _this.$post(_this.GLOBAL.base_url + "address", {
+            token: _this.GLOBAL.token,
+            name:_this.username,
+            phone:_this.phone,
+            address_id:Number(_this.areaId),
+            content:_this.details
+            })
+            .then(res => {
+              console.log('新增地址',res);
+              if(res.code == 200){
+                Toast('添加成功');
+                setTimeout(function(){
+                  _this.$router.replace({
+                    name: "addressList",
+                    params: { title: "地址管理" }
+                  });
+                },2000)
+                
+              }else{
+                Toast(res.msg);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         }
       }
     },
-    selectRegion() {
+     selectRegion() {
       let _this = this;
       _this.$fetch(_this.GLOBAL.base_url + "region")
       .then(res => {
         console.log('全部区域',res)
         if(res.code == 200){
-          // for(let i=0;i<res.data.length;i++){
-          //   _this.areaList.province_list[res.data[i].id] = res.data[i].name//省
-          //   for(let j= 0;j<res.data[i]._child[j].length;j++){
-          //     _this.areaList.city_list[res.data[i]._child[j].id] = res.data[i]._child[j].name//市
-          //     for(let k=0;k<res.data[i]._child[j]._child[k].length;k++){
-          //       _this.areaList.county_list[res.data[i]._child[j]._child[k].id] = res.data[i]._child[j]._child[k].name//区
-          //     }
-          //   }
-          // }
+          _this.backArea = res.data;
+          _this.areaList = {
+            'province_list':{},
+            'city_list':{},
+            'county_list':{}
+          };
+          for(let i = 0; i < res.data.length; i++){
+            let pkey = (i+1)*10000;
+            if(i < 9){
+              pkey = '0'+ pkey;
+            }
+            _this.areaList.province_list[pkey] = res.data[i].name //省
+             var total= 0;
+            for(let j = 0 ; j < res.data[i]._child.length; j++) {
+              let pkey_p = i+1;
+              if(i < 9){
+                pkey_p = '0'+ pkey_p;
+              }
+              let pkey_c = j+1;
+               if(j < 9){
+                pkey_c = '0'+ pkey_c;
+               }
+              let ckey = pkey_p.toString() + pkey_c.toString() + '00';
+              _this.areaList.city_list[ckey] = res.data[i]._child[j].name //市
+             
+                if(res.data[i]._child[j]._child !== undefined && res.data[i]._child[j]._child !== 'undefined') {
+                  for(let k = 0; k < res.data[i]._child[j]._child.length; k++) {
+                      let pkey_p_c = i+1;  
+                      if(i < 9){
+                        pkey_p_c = '0'+ pkey_p_c;
+                      }
+                      let pkey_c = j+1;
+                      if(j < 9){
+                        pkey_c = '0'+ pkey_c;
+                      }
+                      let ckey_c = k+1;
+                      if(k < 9){
+                        ckey_c = '0'+ ckey_c;
+                      }
+                      let okey = pkey_p_c.toString() + pkey_c.toString() + ckey_c.toString();
+                      _this.areaList.county_list[okey] = res.data[i]._child[j]._child[k].name //区
+                  }
+                }
+            }
+           
+          }
           console.log(_this.areaList);
           this.areaShow = true;
         }
       }).catch(err => {
         // console.log(err)
       })
-
     },
     getArea(e) {
-      console.log(e);
+      console.log(e)
+      this.location = e[0].name+' '+e[1].name+' '+e[2].name;
+      console.log(this.location)
+      let area = JSON.stringify(this.backArea);
+      if(e[e.length-1] !==undefined) {
+        console.log(area.substr(area.indexOf(e[e.length-1].name)-20,15).match(/\d+/g));
+        this.areaId = area.substr(area.indexOf(e[e.length-1].name)-20,15).match(/\d+/g)[0];
+      } else if (e[e.length-2] !==undefined) {
+          console.log(area.substr(area.indexOf(e[e.length-2].name)-20,15).match(/\d+/g));
+           this.areaId = area.substr(area.indexOf(e[e.length-2].name)-20,15).match(/\d+/g)[0];
+      }
       this.areaShow = false;
     },
     change() {},

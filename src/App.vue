@@ -54,4 +54,5 @@ export default {
 
 <style lang="less">
   @import "./styles/common";
+  @import "./styles/componentStyle";
 </style>

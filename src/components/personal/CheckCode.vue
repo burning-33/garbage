@@ -27,23 +27,31 @@ export default {
     return {
       sms: "",
       validateCode:'',
-      phoneNum: "18782065437",
       //倒计时
       is_show: true,
       last_time: "",
-      getCodetext: "获取验证码"
+      getCodetext: "获取验证码",
+      phoneNum:'',
+      from:''      
     };
+  },
+  created(){
+      this.from = this.$route.params.title
+      // console.log(this.$route.params.title)
+      // console.log(this.GLOBAL.mobile)
+      this.phoneNum = this.GLOBAL.mobile
   },
   methods: {
     getValidateCode() {
       let _this = this;
-      _this
+      if(this.from == '设置密码'){
+        _this
         .$fetch(_this.GLOBAL.base_url + "sms", {
-          mobile: _this.phoneNum,
+          mobile: _this.GLOBAL.mobile,
           type: "pwd"
         })
         .then(res => {
-          console.log(res);
+          console.log(res,'密码');
           if (res.code == 200) {
             _this.is_show = !_this.is_show;
             _this.validateCode = res.data
@@ -53,6 +61,25 @@ export default {
         .catch(err => {
           console.log(err);
         });
+      }else{
+        _this
+        .$fetch(_this.GLOBAL.base_url + "sms", {
+          mobile: _this.GLOBAL.mobile,
+          type: "verify"
+        })
+        .then(res => {
+          console.log(res,'手机号');
+          if (res.code == 200) {
+            _this.is_show = !_this.is_show;
+            _this.validateCode = res.data
+            _this.GLOBAL.countdown(_this);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      }
+      
     },
     nextStep() {
         console.log(this.sms)
@@ -62,10 +89,18 @@ export default {
       } else if (this.sms != this.validateCode) {
         Toast("验证码不正确");
       } else {
-        this.$router.push({
-          name: "setPwd",
-          params: { title: "设置密码" ,code:this.validateCode}
-        });
+        if(this.from == '设置密码'){
+          this.$router.replace({
+            name: "setPwd",
+            params: { title: "设置密码" ,code:this.validateCode}
+          });
+        }else{
+          this.$router.replace({
+            name: "newPhone",
+            params: { title: "新手机号" ,code:this.validateCode}
+          });
+        }
+        
       }
     }
   },
@@ -89,14 +124,7 @@ export default {
   .van-cell {
     padding: 0 !important;
   }
-  .van-cell__title,
-  .van-cell__value {
-    display: flex;
-  }
-  .van-button {
-    height: 42px;
-    color: #fff;
-  }
+  
   .van-button--primary {
     border: 0;
   }

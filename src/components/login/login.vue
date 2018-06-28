@@ -48,11 +48,12 @@ export default {
           if(res.code == 200){
             Toast.success('登录成功,正在跳转...');
             window.sessionStorage.setItem('token',res.data.token)
+            window.sessionStorage.setItem('mobile',res.data.mobile)
             setTimeout(function(){
               _this.$router.push({name:'home'})
             },3000)
           }else{
-            Toast(res.data.msg);
+            Toast(res.msg);
           }
         })
         .catch(err => {

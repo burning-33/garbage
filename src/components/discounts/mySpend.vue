@@ -3,7 +3,7 @@
       <!-- 头部 -->
     <div class="b-center mtb10 bgw ptb15 borderTB myHead">
       <p class="fs16 colorb mr40">总消费金额</p>
-      <p class="colorEF fontB fs30">￥300.00</p>
+      <p class="colorEF fontB fs30">￥{{total}}</p>
     </div>
     <!-- 消费记录 -->
     <div class="bgw">
@@ -16,10 +16,10 @@
                 <van-col span="5" class="color333">付款方式</van-col>
             </van-row>
             <van-row class="tc mt10" v-for="(item,index) in spendInfo" :key="index">
-                <van-col span="8">{{item.orderId}}</van-col>
-                <van-col span="6">{{item.time}}</van-col>
-                <van-col span="5">{{item.money}}</van-col>
-                <van-col span="5">{{item.method}}</van-col>
+                <van-col span="8">{{item.number}}</van-col>
+                <van-col span="6">{{item.pay_time}}</van-col>
+                <van-col span="5">{{item.all_price}}</van-col>
+                <van-col span="5">{{item.pay_type}}</van-col>
             </van-row>
         </div>
     </div>
@@ -27,10 +27,12 @@
 </template>
 
 <script>
+import { Toast } from "vant";
 export default {
   name: "mySpend",
   data() {
     return {
+        total:0,
         spendInfo:[
             {orderId:'76113675032',time:'2018-06-1',money:'20.00',method:'微信支付'},
             {orderId:'76113675032',time:'2018-06-1',money:'20.00',method:'微信支付'},
@@ -41,6 +43,26 @@ export default {
             {orderId:'76113675032',time:'2018-06-1',money:'20.00',method:'微信支付'}           
         ]
     };
+  },
+  created(){
+      let _this = this;
+      _this.$fetch(_this.GLOBAL.base_url + "consumption", {
+          token: _this.GLOBAL.token,
+          p:1,
+          row:7
+          })
+        .then(res => {
+          console.log('我的消费',res);
+          if(res.code == 200){
+             _this.total = res.data.all_price?res.data.all_price:0
+            _this.spendInfo = res.data.list;
+          }else{
+            Toast(res.msg);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
   },
   methods: {
   }

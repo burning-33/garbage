@@ -5,63 +5,85 @@
       <div class="title">确认订单</div>
       <div>...</div>
     </div>
-    <div class="top">
-      <div class="iconfont adressicon">&#xe61a;</div>
-      <div class="collectGoods">
+    <div v-if="orderShow">
+      <div class="top" @click="goAdrees">
+        <div class="iconfont adressicon">&#xe61a;</div>
+        <div class="collectGoods" >
           <div class="shouhuoBox">
-            <div class="h1">收货人：丽丽</div>
+            <div class="h1">收货人：{{adress.address.name}}</div>
             <div class="call">
               <span class="iconfont callicon">&#xe633;</span>
-              <span>13580805041</span>
+              <span>{{adress.address.phone}}</span>
             </div>
           </div>
-            <span class="address">收货地址:22222222222222222222222222222222222222
+          <span class="adress">收货地址:{{adress.address.content}}
             </span >
+        </div>
+        <div class="you iconfont">&#xe60d;</div>
       </div>
-      <div class="you iconfont">&#xe60d;</div>
     </div>
-    <div class="details">
+    <div v-else>
+      <div class="top" @click="goAdrees">
+        <div class="iconfont adressicon">&#xe61a;</div>
+        <div class="collectGoods">
+          <div class="shouhuoBox">
+            <div class="h1">收货人：</div>
+            <div class="call">
+              <span class="iconfont callicon">&#xe633;</span>
+              <span></span>
+            </div>
+          </div>
+          <span class="address">收货地址:
+            </span >
+        </div>
+        <div class="you iconfont">&#xe60d;</div>
+      </div>
+    </div>
+      <div class="details">
       <span>
         订单详情
       </span>
-    </div>
-    <div class="listBox">
-      <img src="" alt="" class="pic">
-      <div class="youBox">
-          <div class="h2">心相印20包整箱批发纸巾家庭装卫生纸
-            3层茶语系列餐巾纸家用面巾</div>
-        <div class="price">
-              <div>￥:120.00</div>
-              <div>X3</div>
+      </div>
+      <div>
+        <div class="listBox" v-for="(item,index) in adress.goods" :key="index">
+          <img :src="item.cover" alt="" class="pic">
+          <div class="youBox">
+            <div class="h2">{{item.name}}</div>
+            <div class="price">
+              <div>￥{{item.price}}</div>
+              <div>X{{item.num}}</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="total">合计数量：3</div>
+
+      <div class="total">合计数量：{{adress.num}}</div>
+
     <div class="moneyBox">
       <div class="section">
           <div>应付金额：</div>
-          <div>￥360.00</div>
+          <div>￥{{adress.all_money}}</div>
+        </div>
+        <div class="section">
+          <div>运费金额：</div>
+          <div>￥{{adress.freight}}</div>
+        </div>
+        <div class="section">
+          <div>优惠金额：</div>
+          <div class="discount">￥{{adress.discount_money}}</div>
+        </div>
       </div>
-      <div class="section">
-        <div>运费金额：</div>
-        <div>￥360.00</div>
+      <div class="sumBox">
+        <div class="sum">应付总金额  ￥360.00</div>
+        <div class="yes" @click="payment">确定</div>
       </div>
-      <div class="section">
-        <div>优惠金额：</div>
-        <div class="discount">￥-360.00</div>
-      </div>
-    </div>
-    <div class="sumBox">
-      <div class="sum">应付总金额  ￥360.00</div>
-      <div class="yes" @click="payment">确定</div>
-    </div>
-    <van-popup v-model="show" >
+      <van-popup v-model="show" >
         <div class="showBox">
           <div class="iconfont close" @click="close">&#xe609;</div>
           <div class="h1">选择支付方式</div>
           <div class="zhifubox">
             <div class="box" @click="zhifubaoBtn">
-              <div class="iconfont zhifubao">&#xe64e;</div>
+              <div class="iconfont zhifubao">&#xe629;</div>
               <div>支付宝</div>
             </div>
             <div class="box">
@@ -70,62 +92,74 @@
             </div>
           </div>
         </div>
+      </van-popup>
+      <van-popup v-model="showzhifubao">
+        <div class="showBox">
+          <div class="iconfont close close1" @click="closezhifubao">&#xe609;</div>
+          <div class="h2">请复制以下链接，用浏览器打开</div>
+          <div class="lianjie">{{link}}</div>
+          <div class="btnBox">
+            <div class="cancel" @click="cancel">取消</div>
+            <div class="copy"   :data-clipboard-text="link"  @click="copy">复制</div>
+          </div>
+        </div>
     </van-popup>
-    <van-popup v-model="showzhifubao">
-      <div class="showBox">
-        <div class="iconfont close" @click="closezhifubao">&#xe609;</div>
-        <div class="h2">请复制以下链接，用浏览器打开</div>
-        <div class="lianjie">{{link}}</div>
-        <div class="btnBox">
-          <div class="cancel" @click="cancel">取消</div>
-          <div class="copy"   :data-clipboard-text="link"  @click="copy">复制</div>
+        <van-popup v-model="showsucce">
+          <div >
+        <div class="showBox">
+          <div class="h1">链接已复制</div>
+          <div class="ok" @click="ok">OK</div>
         </div>
       </div>
-    </van-popup>
-    <van-popup v-model="showsucce">
-      <div class="showBox">
-          <div class="h1">链接已复制</div>
-          <div class="ok">OK</div>
-      </div>
-    </van-popup>
-  </div>
+        </van-popup>
 
+  </div>
 </template>
 
 <script>
   import Vue from 'vue'
   import { Popup } from 'vant';
   import Clipboard from 'clipboard';
+  import { Toast } from 'vant';
+  import { Dialog } from 'vant';
   Vue.use(Popup);
   export default {
     name: 'Ordersure',
+    props:['chanpin'],
     data() {
       return {
         show:false,
         showzhifubao:false,
         link:'fgggggggggggggggggggggggggggggggggggggeawrtgraeeeeetgr',
-        showsucce:false
+        showsucce:false,
+        list:[],//传输过来的产品数据
+        obj:{},//传输过来的产品数据
+        adress:'',
+        orderShow:false,
+        totalNum:''//合计数量
       }
     },
     computed: {
-
     },
     methods: {
       payment(){
-        this.show = true
+        if(this.orderShow == false){
+          Toast('请设置地址');
+        }else {
+          console.log('000')
+          this.show = true
+        }
       },
       close(){
         this.show = false
       },
       zhifubaoBtn(){
-        console.log('00')
         this.show = false
         this.showzhifubao = true
       },
       closezhifubao(){
         this.showzhifubao = false
       },
-
       cancel(){
         this.showzhifubao = false
       },
@@ -143,8 +177,38 @@
           console.log('该浏览器不支持自动复制')
           clipboard.destroy()
         })
+      },
+      ok(){
+        this.showsucce = false
+      },
+      // 设置地址页面
+      goAdrees(){
+        console.log('0000')
+        this.$router.push('./Me/addressList')
       }
     },
+    mounted(){
+      const goods = JSON.stringify(this.chanpin);
+      const selt = this;
+      const  token = sessionStorage.getItem("token");
+      selt.$fetch(selt.GLOBAL.base_url + 'order_info',{token:token,goods:goods})
+        .then((response) => {
+          console.log(response)
+          if(response.code == '404'){
+            Toast('请设置地址');
+            return
+          }
+            selt.orderShow = true
+            selt.adress= response.data;
+          var nums = 0
+          for(var i =0;i<response.data.goods;i++){
+            nums= Number(response.data.goods[i].num) + nums
+            console.log('000000000000')
+          }
+          console.log(nums)
+            selt.totalNum = nums
+        })
+    }
   }
 
 </script>
@@ -160,6 +224,9 @@
     z-index: 999;
     background: #fafffb;
     overflow-y: auto;
+  }
+  .van-popup{
+    border-radius: 10px;
   }
   .slide-fade-enter-active {
     transition: all .6s ease;
@@ -185,6 +252,7 @@
       box-sizing: border-box;
       font-size: 20px;
       position: relative;
+      z-index: 99;
       .iconfont{
         color: #ffffff;
       }
@@ -220,12 +288,18 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 10px;
+        .h1{
+          width: 50%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
         .callicon{
           color: #fb4e26;
         }
       }
       .collectGoods{
-        width: 70%;
+        width: 78%;
         overflow: hidden;
       }
       .address{
@@ -269,6 +343,7 @@
         font-size: 12px;
       }
       .youBox{
+        height: 100%;
         display: flex;
         flex-direction:column;
         justify-content: space-between;
@@ -341,7 +416,7 @@
         width: 80px;
         height: 25px;
         line-height: 25px;
-        margin: 0 auto;
+        margin: 40px auto;
       }
       .close{
         position: absolute;
@@ -349,6 +424,9 @@
         right: 4px;
         color: #df1c24;
         font-size: 30px;
+      }
+      .close1{
+        top: -44px;
       }
       .h1{
         text-align: center;
@@ -369,7 +447,6 @@
       .box{
         width: 40%;
         text-align: center;
-        background: red;
         div{
           width: 100%;
           text-align: center;

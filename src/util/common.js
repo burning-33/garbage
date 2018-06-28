@@ -12,19 +12,16 @@ axios.defaults.baseURL ='';
 axios.interceptors.request.use(
   config => {
     // const token = getCookie('名称');注意使用的时候需要引入cookie方法，推荐js-cookie
-    if(config.method === 'post'){
-      config.data = qs.stringify(config.data);
-    }else{
-      config.data = JSON.stringify(config.data);
+    console.log(config.method)
+    if(config.method === 'get'){
+      config.data = JSON.stringify(config.data);      
+    } else{
+      config.data = qs.stringify(config.data);      
     }
     config.headers = {
       'Content-Type':'application/x-www-form-urlencoded'
-    }
-    // if(token){
-    //   config.params = {'token':token}
-    //   console.log(config.params);
-    // }
-    return config;
+    };
+    return config; 
   },
   error => {
     return Promise.reject(err);
@@ -80,30 +77,15 @@ export function fetch(url,params={}){
 //
 export function post(url,data = {}){
   return new Promise((resolve,reject) => {
+    console.log(data)
     axios.post(url,data)
-      .then(response => {    
+      .then(response => {
         resolve(response.data);
       },err => {
         reject(err)
       })
   })
 }
-// export function post(url,param){
-//   return new Promise((resolve,reject) => {
-//     axios({
-//       method: 'post',
-//       url: url,
-//       data: param,
-//       cancelToken: new CancelToken(c => {
-//         cancel = c
-//       })
-//     }).then(res => {
-//       resolve(res)
-//     }).catch(error => {
-//       reject(error)
-//     })
-//   })
-// }
 
 /**
  * 封装patch请求
@@ -133,6 +115,24 @@ export function patch(url,data = {}){
 export function put(url,data = {}){
   return new Promise((resolve,reject) => {
     axios.put(url,data)
+      .then(response => {
+        resolve(response.data);
+      },err => {
+        reject(err)
+      })
+  })
+}
+
+/**
+ * 封装DELETE请求
+ * @param url
+ * @param data
+ * @returns {Promise}
+ */
+
+export function det(url,data = {}){
+  return new Promise((resolve,reject) => {
+    axios.delete(url,data)
       .then(response => {
         resolve(response.data);
       },err => {

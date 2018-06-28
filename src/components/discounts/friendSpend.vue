@@ -3,7 +3,7 @@
       <!-- 头部 -->
     <div class="b-center mtb10 bgw ptb15 borderTB myHead">
       <p class="fs16 colorb mr40">总消费金额</p>
-      <p class="colorEF fontB fs30">￥300.00</p>
+      <p class="colorEF fontB fs30">￥{{total}}</p>
     </div>
     <!-- 消费记录 -->
     <div class="mlr10 plr5 b-v-center"><p class="iconfont fs25 colorEF mr3">&#xe62d;</p><p class="color333 fs16">消费明细</p></div>
@@ -19,10 +19,10 @@
                 <van-col span="9" class="color333 ptb5">加入时间</van-col>
                 <van-col span="8" class="color333 ptb5">{{isActive == 1?'联系电话':'消费金额'}}</van-col>
             </van-row>
-            <van-row class="tc mt10 " v-for="(item,index) in spendInfo" :key="index">
-                <van-col span="7">{{item.name}}</van-col>
-                <van-col span="9">{{item.time}}</van-col>
-                <van-col span="8">{{isActive == 0? item.money:item.phone}}</van-col>
+            <van-row class="tc mt10" v-for="(item,index) in spendInfo" :key="index">
+                <van-col  span="7">{{item.nickname}}</van-col>
+                <van-col  span="9">{{item.regdate}}</van-col>
+                <van-col span="8">{{isActive == 0? Number(item.money):item.mobile}}</van-col>
             </van-row>
         </div>
     </div>
@@ -34,25 +34,109 @@ export default {
   name: "mySpend",
   data() {
     return {
-        spendInfo:[
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'},
-            {name:'小李子',time:'2018-06-1',money:'20.00',phone:'13547393115'}           
-        ],
-        isActive:0
+      spendInfo: [
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        },
+        {
+          name: "小李子",
+          time: "2018-06-1",
+          money: "20.00",
+          phone: "13547393115"
+        }
+      ],
+      isActive: 0,
+      total: ""
     };
   },
   methods: {
-      changeState(e){
-          this.isActive = this.isActive== e.target.dataset.id?this.isActive:e.target.dataset.id
+    changeState(e) {
+      this.isActive =
+        this.isActive == e.target.dataset.id
+          ? this.isActive
+          : e.target.dataset.id;
+      this.getspendInfo();
+    },
+    getspendInfo() {
+      let _this = this;
+      if (this.isActive == 0) {
+        _this
+          .$fetch(_this.GLOBAL.base_url + "consumption_friend", {
+            token: _this.GLOBAL.token,
+            type: "已消费",
+            p: 1,
+            row: 7
+          })
+          .then(res => {
+            console.log("已消费", res);
+            if (res.code == 200) {
+              _this.total = Number(res.data.all_price.money);
+              _this.spendInfo = res.data.list;
+            } else {
+              Toast(res.msg);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } else {
+        _this
+          .$fetch(_this.GLOBAL.base_url + "consumption_friend", {
+            token: _this.GLOBAL.token,
+            type: "未消费",
+            p: 1,
+            row: 7
+          })
+          .then(res => {
+            console.log("未消费", res);
+            if (res.code == 200) {
+              _this.total = res.data.all_price ? res.data.all_price.money : 0;
+              _this.spendInfo = res.data.list;
+            } else {
+              Toast(res.msg);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
+    }
   },
-  created(){
-
+  created() {
+    this.getspendInfo();
   }
 };
 </script>
@@ -63,24 +147,30 @@ export default {
   background: #eee;
   overflow: hidden;
   height: 100%;
-  .myHead{
-      height:93px;
+  .myHead {
+    height: 93px;
   }
-  
-  .color333 + .color333{
-      border-left: 1px solid #dfdfdf;
+
+  .color333 + .color333 {
+    border-left: 1px solid #dfdfdf;
   }
-  .isActive{
-      height: 38px;
-      background: #e9f4f4;
-      line-height: 38px;
+  .isActive {
+    height: 38px;
+    background: #e9f4f4;
+    line-height: 38px;
   }
-  .nospend{
-      height: 38px;
-      line-height: 38px;
+  .colorEF {
+    color: #ef675d;
   }
-  .borderL{
-      border-left: 1px solid #dfdfdf;
+  .nospend {
+    height: 38px;
+    line-height: 38px;
+  }
+  .borderL {
+    border-left: 1px solid #dfdfdf;
+  }
+  .middle{
+    
   }
 }
 </style>

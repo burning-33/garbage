@@ -8,22 +8,22 @@
               <div  @click="runCheckItem(index)">
                 <van-checkbox v-model="checked[index]" ></van-checkbox>
               </div>
-                <img :src="item.img" alt="" class="imgLi ">
-                <div class="right ">
-                  <div class="flex">
-                    <h5>{{item.name}}</h5>
-                    <span class="iconfont close" @click="close(index)">&#xe8e3;</span>
-                  </div>
-                  <h6>￥{{item.price}}</h6>
-                  <div class="flex">
-                    <p>{{item.author}}</p>
-                    <div class="add">
-                      <span @click="reduce(index)">-</span>
-                      <span>{{item.count}}</span>
-                      <span @click="plus(index)">+</span>
-                    </div>
+              <img :src="item.image" alt="" class="imgLi ">
+              <div class="right ">
+                <div class="flex">
+                  <h5>{{item.name}}</h5>
+                  <span class="iconfont close" @click="close(index)">&#xe8e3;</span>
+                </div>
+                <h6>￥{{item.money}}</h6>
+                <div class="flex">
+                  <p>购买数量</p>
+                  <div class="add">
+                    <span @click="reduce(index)">-</span>
+                    <span>{{item.num}}</span>
+                    <span @click="plus(index)">+</span>
                   </div>
                 </div>
+              </div>
             </li>
           </ul>
         </div>
@@ -32,17 +32,27 @@
             <van-checkbox v-model="totalSelection" >全选</van-checkbox>
           </div>
           <div>合计：</div>
-          <div class="priceAll">{{money}}</div>
+          <div class="priceAll">{{allmoney}}</div>
           <div class="submitBtn" @click="submit">提交订单</div>
         </div>
       </div>
       <div v-else>
         <div class="none">
           <h3>购物车还没有东西</h3>
-          <h5 @click="gohome">去逛逛？</h5>
+          <!--<h5 @click="gohome">？</h5>-->
+          <router-link tag="h5" :to="{name: 'home',params:{title:'首页'}}">
+            去逛逛?
+          </router-link>
         </div>
       </div>
     </div>
+    <transition name="slide-fade">
+      <Ordersure
+        v-if="ordershow"
+        @orderfalse = 'orderfalse'
+        :chanpin = 'chanpin'
+      />
+    </transition>
   </div>
 
 </template>
@@ -53,75 +63,31 @@
   import { Button } from 'vant';
   import { Dialog } from 'vant';
   import { Toast } from 'vant';
-
+  import Ordersure from '../Soncomponents/Ordersure'
   Vue.use(Button);
   Vue.use(Checkbox).use(CheckboxGroup);
   export default {
     name: 'Cart',
-    // components:{Cartpayment},
+    components:{
+      Ordersure,
+    },
     data () {
       return {
         Cartshow: true,
         shows:'true',
-        // editshow: true,
         isactive: true,
         addnum:'0',
-        // checkedBook: [],
         result: ['a', 'b'],
-        bookList:[
-          {
-            "img":"https://img.yzcdn.cn/2.jpg",
-            "name": "JavaScript高级程序设计",
-            "price": "9.9",
-            "author": "购买数量",
-            "describe": "《JavaScript高级程序设计(第3版)》是JavaScript超级畅销书的最新版。ECMAScript 5和HTML5在标准之争中双双胜出，使大量专有实现和客户端扩展正式进入规范，同时也为JavaScript增添了很多适应未来发展的新特性。《JavaScript高级程序设计(第3版)》这一版除增加5章全新内容外，其他章节也有较大幅度的增补和修订，新内容篇幅约占三分之一。全书从JavaScript语言实现的各个组成部分——语言核心、DOM、BOM、事件模型讲起，深入浅出地探讨了面向对象编程、Ajax与Comet服务器端通信，HTML5表单、媒体、Canvas（包括WebGL）及Web Workers、地理定位、跨文档传递消息、客户端存储（包括IndexedDB）等新API，还介绍了离线应用和与维护、性能、部署相关的开发实践。《JavaScript高级程序设计(第3版)》附录展望了未来的API和ECMAScript Harmony规范。",
-            "pages":730,
-            "number":'B00CBBJS5Y',
-            "DateOfPublication":'2012年3月1日',
-            "count": 1
-          },
-          {
-            "img":"../../static/book-02.jpg",
-            "name": "深入理解Java虚拟机：JVM高级特性与最佳实践（第2版）",
-            "price": "9.9",
-            "author": "Nicholas C. Zakas",
-            "describe": "《JavaScript高级程序设计(第3版)》是JavaScript超级畅销书的最新版。ECMAScript 5和HTML5在标准之争中双双胜出，使大量专有实现和客户端扩展正式进入规范，同时也为JavaScript增添了很多适应未来发展的新特性。《JavaScript高级程序设计(第3版)》这一版除增加5章全新内容外，其他章节也有较大幅度的增补和修订，新内容篇幅约占三分之一。全书从JavaScript语言实现的各个组成部分——语言核心、DOM、BOM、事件模型讲起，深入浅出地探讨了面向对象编程、Ajax与Comet服务器端通信，HTML5表单、媒体、Canvas（包括WebGL）及Web Workers、地理定位、跨文档传递消息、客户端存储（包括IndexedDB）等新API，还介绍了离线应用和与维护、性能、部署相关的开发实践。《JavaScript高级程序设计(第3版)》附录展望了未来的API和ECMAScript Harmony规范。",
-            "pages":730,
-            "number":'B00CBBJS5Y',
-            "DateOfPublication":'2012年3月1日',
-            "count": 1
-          },
-          {
-            "img":"../../static/book-03.jpg",
-            "name": "JavaScript权威指南（第6版）",
-            "price": "9.9",
-            "author": "Nicholas C. Zakas",
-            "describe": "《JavaScript高级程序设计(第3版)》是JavaScript超级畅销书的最新版。ECMAScript 5和HTML5在标准之争中双双胜出，使大量专有实现和客户端扩展正式进入规范，同时也为JavaScript增添了很多适应未来发展的新特性。《JavaScript高级程序设计(第3版)》这一版除增加5章全新内容外，其他章节也有较大幅度的增补和修订，新内容篇幅约占三分之一。全书从JavaScript语言实现的各个组成部分——语言核心、DOM、BOM、事件模型讲起，深入浅出地探讨了面向对象编程、Ajax与Comet服务器端通信，HTML5表单、媒体、Canvas（包括WebGL）及Web Workers、地理定位、跨文档传递消息、客户端存储（包括IndexedDB）等新API，还介绍了离线应用和与维护、性能、部署相关的开发实践。《JavaScript高级程序设计(第3版)》附录展望了未来的API和ECMAScript Harmony规范。",
-            "pages":730,
-            "number":'B00CBBJS5Y',
-            "DateOfPublication":'2012年3月1日',
-            "count": 1
-          },
-          {
-            "img":"../../static/book-04.jpg",
-            "name": "编写高质量代码：改善Java程序的151个建议",
-            "price": "9.9",
-            "author": "Nicholas C. Zakas",
-            "describe": "《JavaScript高级程序设计(第3版)》是JavaScript超级畅销书的最新版。ECMAScript 5和HTML5在标准之争中双双胜出，使大量专有实现和客户端扩展正式进入规范，同时也为JavaScript增添了很多适应未来发展的新特性。《JavaScript高级程序设计(第3版)》这一版除增加5章全新内容外，其他章节也有较大幅度的增补和修订，新内容篇幅约占三分之一。全书从JavaScript语言实现的各个组成部分——语言核心、DOM、BOM、事件模型讲起，深入浅出地探讨了面向对象编程、Ajax与Comet服务器端通信，HTML5表单、媒体、Canvas（包括WebGL）及Web Workers、地理定位、跨文档传递消息、客户端存储（包括IndexedDB）等新API，还介绍了离线应用和与维护、性能、部署相关的开发实践。《JavaScript高级程序设计(第3版)》附录展望了未来的API和ECMAScript Harmony规范。",
-            "pages":730,
-            "number":'B00CBBJS5Y',
-            "DateOfPublication":'2012年3月1日',
-            "count": 1
-          },
-
-        ],
+        bookList:[],
         checkItem: [],
         prices: 0,
         checked:[],//复选框
         totalSelection:false,//全选按钮
         arr:[1,2,3],
-        money:'¥0',
+        allmoney:'¥0.00',
         clickButton: '点击按钮',
+        ordershow:false,
+        chanpin:[], //产品详情传入确认订单
       }
     },
     computed: {
@@ -139,6 +105,7 @@
         for(var i = 0;i <length; i++ ){
           this.checked.push(false)
         }
+        console.log(this.checked)
       },
       // 全选
       totalSelectionf:function () {
@@ -158,9 +125,13 @@
       // 复选框选择事件
       runCheckItem(idx) {
         var length = this.checked.length;
-        for(var i = 0; i< length;i++){
-          this.checked[idx] = !this.checked[idx]
+        this.checked[idx] = !this.checked[idx];
+        if(this.checked[idx] == true){
+          this.checked.splice(idx,1,false)
+        }else if(this.checked[idx] == false){
+          this.checked.splice(idx,1,true)
         }
+        console.log(this.checked);
         if(this.checked.indexOf(false) == -1){
           this.totalSelection = true
         }else {
@@ -172,32 +143,67 @@
       totalPrice(){
         var arrI=[];
         var mon = 0;
+        var arrlist = [];
+        var str = ''
         for(var i = 0; i< this.checked.length;i++){
           if(this.checked[i] == true){
             arrI.push(i)
           }
         }
         for(var a=0;a< arrI.length; a++){
-          mon += Number(this.bookList[a].price)* this.bookList[a].count
+          mon += Number(this.bookList[arrI[a]].money)* this.bookList[arrI[a]].num;
+          var obj={};
+          obj.a_id = this.bookList[arrI[a]].id;
+          obj.num = this.bookList[arrI[a]].num;
+          console.log(obj)
+          arrlist.push(obj)
         }
-        this.money = '¥' + mon.toFixed(2);
+        this.chanpin =arrlist;
+        this.allmoney = '¥' + mon.toFixed(2);
+        console.log(arrlist)
       },
 //    减号
       reduce(idx) {
-        if(this.bookList[idx].count == 1){
+        if(this.bookList[idx].num== 1){
           return
         }else {
-          this.bookList[idx].count -= 1
+          this.bookList[idx].num -= 1
+          const selt = this;
+          const id = selt.bookList[idx].id;
+          const num = this.bookList[idx].num
+          const token = sessionStorage.getItem("token");
+          selt.$put(selt.GLOBAL.base_url + 'cart',{token:token, id: id,num:num})
+            .then((response) => {
+              console.log(response)
+              if(response.code == 200){
+                //      计算总价
+                console.log('00')
+                selt.totalPrice()
+              }else {
+                Toast('网络错误，稍后再试');
+              }
+            });
         }
-        //      计算总价
-        this.totalPrice()
       },
 //    加号
       plus(idx) {
-        this.bookList[idx].count += 1;
-
-//      计算总价
-        this.totalPrice()
+        this.bookList[idx].num += 1;
+        const selt = this;
+        const id = selt.bookList[idx].id;
+        const num = this.bookList[idx].num
+        const token = sessionStorage.getItem("token");
+        console.log(id)
+        selt.$put(selt.GLOBAL.base_url + 'cart',{token:token, id: id,num:num})
+          .then((response) => {
+            console.log(response)
+            if(response.code == 200){
+              //      计算总价
+              console.log('00')
+              selt.totalPrice()
+            }else {
+              Toast('网络错误，稍后再试');
+            }
+          });
       },
 //    选中删除
       close(idx) {
@@ -206,26 +212,59 @@
           message: '',
           className:'detail'
         }).then(() => {
-          this.bookList.splice(idx,1)
+          const selt = this;
+          const id = selt.bookList[idx].id;
+          const token = sessionStorage.getItem("token");
+          console.log(token)
+          selt.$det(selt.GLOBAL.base_url + 'cart',{data:{token: token, id: id}})
+            .then((response) => {
+              console.log(response)
+              if(response.code == 200){
+                selt.bookList.splice(idx,1);
+                selt.checked.splice(idx,1);
+                //      计算总价
+                selt.totalPrice()
+              }else {
+                Toast('网络错误，稍后再试');
+              }
+            })
         }).catch(() => {
           return
         });
 
-        //      计算总价
-        this.totalPrice()
       },
       // 提交订单
       submit(){
         if(this.checked.indexOf(true) == -1){
           Toast('您还没有选中宝贝哦');
+        }else {
+          this.ordershow = true
         }
+      },
+      orderfalse(){
+        this.ordershow = false;
+        if(this.checked){
+          this.checked = []
+        }
+        this.totalSelection = false
+      },
+      gohome() {
+        window.ContentList.location.href = './Home.vue';
       }
     },
     mounted(){
-      this.checkde()
-    },
-    gohome() {
-      window.ContentList.location.href = './Home.vue';
+      const selt = this;
+      const token = sessionStorage.getItem("token");
+      selt.$fetch(selt.GLOBAL.base_url + 'cart',{token: token})
+        .then((response) => {
+          console.log(response.data)
+          if(response.data.length){
+            selt.bookList = response.data
+          }else {
+            selt.shows = false
+          }
+          this.checkde()
+        })
     }
   }
 </script>
@@ -233,6 +272,16 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
   /*@import "../styles/cart.less";*/
+  .slide-fade-enter-active {
+    transition: all .6s ease;
+    transform: translateX(0);
+  }
+  .slide-fade-leave-active {
+    transition: all .6s linear;
+  }
+  .slide-fade-enter, .slide-fade-leave-to {
+    transform: translateX(100%);
+  }
   #app {
     .detail{
       background: red;
@@ -338,23 +387,24 @@
     margin-right: 10px;
     padding-top: 40px;
   }
-.ulBox{
-  .van-checkbox__label{
-    display: flex;
-    width: 100%;
-    height: 100%;
-    background: red;
+  .ulBox{
+    .van-checkbox__label{
+      display: flex;
+      width: 100%;
+      height: 100%;
+      background: red;
+    }
   }
-}
   .none{
     width: 100%;
     height: 50px;
-    margin: 0 auto;
+    margin: 50px auto;
     text-align: center;
     h5{
-      color: #00ca00;
+      color: red;
       position: absolute;
       right: 10px;
+      font-size: 16px;
     }
   }
   .close{

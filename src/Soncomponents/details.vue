@@ -21,7 +21,7 @@
     </div>
     <div class="commentAll">
       <span class="lvse">商品评论（{{list.comment.all_count}}）</span>
-      <span>更多评论 ></span>
+      <span @click="goComment">更多评论 ></span>
     </div>
     <div class="commentWrapper">
       <div class="commentItem">
@@ -58,7 +58,7 @@
       <div class="mark">
         <div class="iconfont close" @click="close">&#xe609;</div>
         <div class="topBox">
-          <img src="https://img.yzcdn.cn/2.jpg" alt="" class="img">
+          <img :src="list.goods.cover" alt="" class="img">
           <div class="rightBox">
             <div class="describe">2121212121212121212121212166612459</div>
             <div class="danjia">
@@ -128,18 +128,30 @@
       <Ordersure
         v-if="ordershow"
         @orderfalse = 'orderfalse'
+        :chanpin = 'chanpin'
+      />
+    </transition>
+    <!--评论-->
+    <transition name="slide-fade">
+      <Comment
+        v-if="commentShow"
+        @commentfalse = 'commentfalse'
+        :idNum="idNum"
       />
     </transition>
   </div>
 </template>
 
 <script>
+  import Comment from '../Soncomponents/Comment'
+  import Ordersure from '../Soncomponents/Ordersure'
+
   import Vue from 'vue'
   import { Swipe, SwipeItem } from 'vant';
   import { Toast } from 'vant';
   import { Dialog } from 'vant';
   import { Popup } from 'vant';
-  import Ordersure from '../Soncomponents/Ordersure'
+
   Vue.use(Popup);
   Vue.use(Swipe).use(SwipeItem);
   export default {
@@ -147,15 +159,18 @@
     props:['imgid','detailsid'],
     components:{
       Ordersure,
+      Comment
     },
     data() {
       return {
         list:'',
+        imglist:'',//banner
         zanactive:false,//未点赞
         show: false,//购买弹出框
         show1: false,//加入购物车弹出框
         fenlei:'',
         yansefenlei:'',
+        chanpinid:'',//默认第一个颜色的id
         isActive:'',//分类没有点击的状态
         isActiveprive:'',
         num:1, // 数量
@@ -164,42 +179,49 @@
         discount:1,//优惠价格
         cartMark:false,
         heji:'',//加入购物车合计
-        ordershow:false//购买订单详情
+        ordershow:false,//购买订单详情
+        commentShow:false,//评论列表
+        idNum:'',//评论列表id
+        chanpin:[], //产品详情传入确认订单
       }
     },
-    created: function(){
-      this.obj()
+    mounted: function(){
+
+      const selt = this;
+      console.log(selt.detailsid)
+      selt.$fetch(selt.GLOBAL.base_url + 'goods/' + selt.detailsid)
+        .then((response) => {
+          console.log(response.data)
+          selt.list= response.data;
+          //规格分类
+          var arr=[];
+          for(var i =0;i < response.data.format.length;i++){
+            arr.push(response.data.format[i].name)
+          }
+          selt.fenlei = arr;
+          selt.yansefenlei = response.data.format[0].color;
+          //默认id
+          selt.chanpinid = response.data.format[0].color[0].id
+          // 单价默认值
+          selt.unitPrice = response.data.format[0].color[0].price;
+          selt.heji = response.data.format[0].color[0].price;
+          // 判断是否点赞
+          if(response.data.comment.star == 0){
+            selt.zanactive = false
+          }else {
+            selt.zanactive = true
+          }
+        })
     },
     computed: {
       allPrice:function(){
-        return this.unitPrice * this.num
+        return (this.unitPrice * this.num).toFixed(2)
       }
     },
 
     methods: {
       obj(){
-        const selt = this;
-        selt.$fetch(selt.GLOBAL.base_url + 'goods/' + selt.detailsid)
-          .then((response) => {
-            console.log(response.data)
-            selt.list= response.data;
-            //规格分类
-            var arr=[];
-            for(var i =0;i < response.data.format.length;i++){
-              arr.push(response.data.format[i].name)
-            }
-            selt.fenlei = arr;
-            selt.yansefenlei = response.data.format[0].color;
-            // 单价默认值
-            selt.unitPrice = response.data.format[0].color[0].price;
-            selt.heji = response.data.format[0].color[0].price;
-            // 判断是否点赞
-            if(response.data.comment.star == 0){
-              selt.zanactive = false
-            }else {
-              selt.zanactive = true
-            }
-          })
+
       },
       // 加入购物车
       addCart(){
@@ -207,7 +229,14 @@
         this.show1 = true
       },
       zan(){
-        this.zanactive = !this.zanactive
+        this.zanactive = !this.zanactive;
+
+        if(this.zanactive == true){
+          this.list.comment.num +=1
+        }else if(this.zanactive == false){
+          this.list.comment.num -=1
+        }
+        console.log(this.list.comment.num)
       },
       shopping(){
         this.show = true
@@ -219,6 +248,7 @@
         this.unitPrice = this.yansefenlei[index].price;
         //      计算总价
         this.paymentMoney()
+        this.chanpinid = this.yansefenlei[index].id
       },
       // 规格分类选择
       fenleipreBtn(index){
@@ -268,23 +298,49 @@
         this.cartMark = false
       },
       sure(){
-        this.show1 = false
-        this.cartMark = false
-        Toast('加入购物车成功');
+        this.show1 = false;
+        this.cartMark = false;
+        const  token = sessionStorage.getItem("token");
+        // Toast('加入购物车成功');
         const selt = this;
-        selt.$post(selt.GLOBAL.base_url + 'cart',{token:'352',a_id:'1'}
-            )
-          .then((response) => {
-            console.log(response)
+        var num = selt.num;
+        var id = selt.list.goods.id;
+        console.log(token)
+        selt.$post(selt.GLOBAL.base_url + "cart", {token: token,a_id: id,num:num})
+          .then(res => {
+            console.log(res);
+            Toast(res.msg)
+            if(res.code == '200'){
+              this.show1 = false
+              this.cartMark = false
+            }
 
+            // Toast('加入购物车成功');
           })
       },
       orderfalse(){
         this.ordershow = false
       },
+      commentfalse(){
+        this.commentShow = false
+      },
+      //去订单详情
       goOrder(){
         this.show = false
-        this.ordershow = true
+        this.ordershow = true;
+        this.chanpin = [];
+        var objs = {};
+        objs.a_id=this.chanpinid;
+        objs.num =this.num
+        this.chanpin.push(objs)
+        console.log(this.chanpin)
+      },
+      // 去评论列表
+      goComment(){
+        this.idNum = this.list.goods.id
+        this.show = false
+        this.commentShow = true
+        console.log('000')
       }
     },
   }
@@ -295,6 +351,9 @@
 <style scoped lang='less'>
   .van-popup{
     border-radius: 20px 20px 0 0;
+  }
+  img{
+    width: 100%;
   }
   .cartMark{
     position: fixed;
@@ -527,6 +586,10 @@
   box-sizing: border-box;
   font-size: 20px;
   position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
   .iconfont{
     color: #ffffff;
   }
@@ -544,6 +607,7 @@
   .banner{
     width: 100%;
     height: 200px;
+    margin-top: 50px;
     margin-bottom: 10px;
     img{
       width: 100%;
@@ -676,6 +740,10 @@
     background: #ffffff;
     margin-bottom: 60px;
     box-sizing: border-box;
+    overflow-x: hidden;
+    img{
+      width: 100%;
+    }
   }
   .van-dialog__content .van-dialog__message{
     text-align: center;

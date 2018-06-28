@@ -1,16 +1,16 @@
 <template>
   <div class="address">
     <div class="pg15 bgw mb10 " v-for="(item,index) in addressInfo" :key="index">
-        <p class="color333 fs15 mb10 fontB">李易 188****1876</p>
-        <p>四川省自贡市自流井区东方广场1139号向华小区东门13栋1单元1503</p>
+        <p class="color333 fs15 mb10 fontB">{{item.name}} {{item.phone}}</p>
+        <p>{{item.address}}{{item.content}}</p>
         <div class="borderT pt10 mt10 overflow">
-            <p class="fl" @click="changeDefault(index)" >
-                <span :class="addSelected === index?'iconfont colorRed fs18 mr3':'iconfont defaultStyle fs12 mr3'">{{addSelected === index ? '&#xe67e;':'&#xe61b;'}}</span>
-                <span>{{addSelected === index ? '默认地址':'设为默认'}}</span>
+            <p class="fl" @click="changeDefault(item.id,item.is_default)" >
+                <span :class="item.is_default == 1?'iconfont colorRed fs18 mr3':'iconfont defaultStyle fs12 mr3'">{{item.is_default? '&#xe67e;':'&#xe61b;'}}</span>
+                <span>{{item.is_default==1? '默认地址':'设为默认'}}</span>
             </p>
             <div class="b-v-center fr">
-                <p class="mr10" @click="editAdd(index)"><span class="iconfont fs18">&#xe607;</span>编辑</p>
-                <p @click="delAdd(index)"><span class="iconfont fs18">&#xe632;</span>删除</p>
+                <p class="mr10" @click="editAdd(item.id)"><span class="iconfont fs18">&#xe607;</span>编辑</p>
+                <p @click="delAdd(item.id)"><span class="iconfont fs18">&#xe632;</span>删除</p>
             </div>
         </div>
     </div>
@@ -82,20 +82,21 @@ export default {
           console.log(err);
         });
     },
-    changeDefault(index) {
-      console.log(index);
-      if (this.addSelected == index) {
+    changeDefault(index,de) {
+      // console.log(index,'id');
+      if (de == 1) {
         Toast("已经是默认地址");
       } else {
           let _this = this;
-        axios.post(_this.GLOBAL.base_url + "address", {
-            token: _this.phoneNum,//token
+          console.log(_this.GLOBAL.token)
+        _this.$patch(_this.GLOBAL.base_url + "address", {
+            token: _this.GLOBAL.token,//token
             id: index
           })
           .then(res => {
             console.log(res);
             if (res.code == 200) {
-              this.addSelected = index;
+              _this.getAddList();
             }
           })
           .catch(err => {
@@ -106,14 +107,18 @@ export default {
     },
     delAdd(id) {
       let _this = this;
-        axios.post(_this.GLOBAL.base_url + "address", {
-            token: _this.phoneNum,//token
+      console.log(_this.GLOBAL.token)
+      console.log(id)
+        _this.$det(_this.GLOBAL.base_url + "address", {data:{
+            token: _this.GLOBAL.token,//token
             id: id
-          })
+          }})
           .then(res => {
             console.log(res);
             if (res.code == 200) {
-              Toast.success("删除成功");
+              _this.getAddList();
+            }else{
+              Toast(res.msg);
             }
           })
           .catch(err => {
@@ -121,7 +126,11 @@ export default {
           });
     },
     editAdd(id){
-        let obj = this.addressInfo[id]
+      for(let i = 0;i<this.addressInfo.length;i++){
+        if(id = this.addressInfo[i].id){
+          var obj = this.addressInfo[i]
+        }
+      }
         console.log(obj)
         this.$router.push({
         name: "editAddress",

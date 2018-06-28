@@ -22,9 +22,12 @@
       waterfall-disabled="disabled"
       waterfall-offset="400"
     >
-      <li class="li" v-for="(item,index) in list" @click="goDetails(item.id)" :key="index">
-        <img :src="item.imglist" alt="" class="goodsImg">
-      </li>
+      <!--<lazy-component>-->
+        <li class="li" v-for="(item,index) in list"   @click="goDetails(item.id)" :key="index">
+          <img :src="item.imglist" alt="" class="goodsImg">
+        </li>
+      <!--</lazy-component>-->
+
     </ul>
     <transition name="slide-fade">
         <Details

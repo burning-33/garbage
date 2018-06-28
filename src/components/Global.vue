@@ -1,5 +1,7 @@
 <script>
   const base_url = "http://garbage.xxw360.com/api/";
+  const token = sessionStorage.getItem('token')
+  const mobile = sessionStorage.getItem('mobile')
   //验证码倒计时
   function countdown(that) {
     var time = 60;
@@ -22,6 +24,8 @@
   }
   export default {
     base_url,
-    countdown
+    countdown,
+    token,
+    mobile
   };
 </script>

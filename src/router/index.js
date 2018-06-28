@@ -9,7 +9,12 @@ import login from '@/components/login/login'
 import register from '@/components/login/register'
 import PersonalInfo from '@/components/personal/PersonalInfo'
 import CheckCode from '@/components/personal/CheckCode'
+import editPhone from '@/components/personal/CheckCode'
 import setPwd from '@/components/personal/setPwd'
+import newPhone from '@/components/personal/newPhone'
+import nikename from '@/components/personal/nikename'
+import changeImg from '@/components/personal/headImg/changeImg'
+import cutImg from '@/components/personal/headImg/cutImg'
 import addressList from '@/components/address/addressList'
 import addAddress from '@/components/address/addAddress'
 import editAddress from '@/components/address/addAddress'
@@ -70,9 +75,39 @@ export default new Router({
       meta:{showFooter:false}
     },
     {
+      path: '/Me/PersonalInfo/editPhone',
+      name: 'editPhone',
+      component: editPhone,
+      meta:{showFooter:false}
+    },
+    {
       path: '/Me/PersonalInfo/setPwd',
       name: 'setPwd',
       component: setPwd,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/PersonalInfo/newPhone',
+      name: 'newPhone',
+      component: newPhone,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/PersonalInfo/nikename',
+      name: 'nikename',
+      component: nikename,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/PersonalInfo/changeImg',
+      name: 'changeImg',
+      component: changeImg,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/PersonalInfo/cutImg',
+      name: 'cutImg',
+      component: cutImg,
       meta:{showFooter:false}
     },
     {

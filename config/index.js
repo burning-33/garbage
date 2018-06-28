@@ -11,11 +11,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      // '/xxw': {  //使用"/api"来代替"http://f.apiplus.c" 
-      //   target: 'http://garbage.xxw360.com/', //源地址 
-      //   changeOrigin: true, //改变源 
+      // '/xxw': {  //使用"/api"来代替"http://f.apiplus.c"
+      //   target: 'http://garbage.xxw360.com/', //源地址
+      //   changeOrigin: true, //改变源
       //   pathRewrite: {
-      //     '^/xxw': '/' //路径重写 
+      //     '^/xxw': '/' //路径重写
       //   }
       // }
     },
