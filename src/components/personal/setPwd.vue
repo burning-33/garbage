@@ -32,7 +32,14 @@ export default {
   },
   created(){
       let _this = this;
-    
+      if(_this.$route.params.login){
+        _this.modal = {
+          confirmText: "立即登录",
+          contentText: "密码修改成功",
+          red: false,
+          showCancel: false
+        }
+      }
       _this
         .$fetch(_this.GLOBAL.base_url + "pwd", {
           mobile: _this.GLOBAL.mobile,
@@ -70,9 +77,15 @@ export default {
           if(res.code == 200){
             _this.$refs.dialog.confirm().then(()=>{
                 console.log(123)
-                _this.$router.replace(
-                    {name:'PersonalInfo',params:{title:'个人信息'}}
-                )
+                if(_this.$route.params.login){
+                  _this.$router.replace(
+                    {name:'login',params:{title:'登录'}}
+                  )
+                }else{
+                  _this.$router.replace(
+                      {name:'PersonalInfo',params:{title:'个人信息'}}
+                  )
+                }
             }).catch(()=>{
                 console.log(456)
             })

@@ -25,11 +25,20 @@
                 <van-col span="8">{{isActive == 0? Number(item.money):item.mobile}}</van-col>
             </van-row>
         </div>
+        <infinite-loading @infinite="getspendInfo" spinner="waveDots" ref="InfiniteLoading">
+        <span slot="no-results">
+          当前还没有相关订单~
+        </span>
+          <span slot="no-more">
+          已经到底了~
+        </span>
+        </infinite-loading>
     </div>
   </div>
 </template>
 
 <script>
+import InfiniteLoading from 'vue-infinite-loading';
 export default {
   name: "mySpend",
   data() {
@@ -79,32 +88,41 @@ export default {
         }
       ],
       isActive: 0,
-      total: ""
+      total: "",
+      page:1
     };
   },
   methods: {
     changeState(e) {
       this.isActive =
-        this.isActive == e.target.dataset.id
-          ? this.isActive
-          : e.target.dataset.id;
-      this.getspendInfo();
+        this.isActive == e.target.dataset.id ? this.isActive : e.target.dataset.id;
+      // this.getspendInfo();
+      this.page = 1;
+      this.spendInfo = [];
+      this.$nextTick(() => {
+        this.$refs.InfiniteLoading.$emit('$InfiniteLoading:reset');
+      });
     },
-    getspendInfo() {
+    getspendInfo($state) {
       let _this = this;
       if (this.isActive == 0) {
-        _this
-          .$fetch(_this.GLOBAL.base_url + "consumption_friend", {
+        _this.$fetch(_this.GLOBAL.base_url + "consumption_friend", {
             token: _this.GLOBAL.token,
             type: "已消费",
-            p: 1,
-            row: 7
+            p: _this.page,
+            row: 2
           })
           .then(res => {
             console.log("已消费", res);
             if (res.code == 200) {
               _this.total = Number(res.data.all_price.money);
-              _this.spendInfo = res.data.list;
+              _this.spendInfo = _this.spendInfo.concat(res.data.list);
+              _this.page++;
+              if (_this.page > res.data.totalPages) {
+                $state.complete();
+              } else {
+                $state.loaded();
+              }
             } else {
               Toast(res.msg);
             }
@@ -113,18 +131,23 @@ export default {
             console.log(err);
           });
       } else {
-        _this
-          .$fetch(_this.GLOBAL.base_url + "consumption_friend", {
+        _this.$fetch(_this.GLOBAL.base_url + "consumption_friend", {
             token: _this.GLOBAL.token,
             type: "未消费",
-            p: 1,
-            row: 7
+            p: _this.page,
+            row: 2
           })
           .then(res => {
             console.log("未消费", res);
             if (res.code == 200) {
-              _this.total = res.data.all_price ? res.data.all_price.money : 0;
-              _this.spendInfo = res.data.list;
+              _this.total = Number(res.data.all_price.money);
+              _this.spendInfo = _this.spendInfo.concat(res.data.list);
+              _this.page++;
+              if (_this.page > res.data.totalPages) {
+                $state.complete();
+              } else {
+                $state.loaded();
+              }
             } else {
               Toast(res.msg);
             }
@@ -136,7 +159,10 @@ export default {
     }
   },
   created() {
-    this.getspendInfo();
+    // this.getspendInfo();
+  },
+  components:{
+    InfiniteLoading
   }
 };
 </script>

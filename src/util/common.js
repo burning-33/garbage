@@ -1,4 +1,4 @@
-let base_url = 'http://garbage.xxw360.com/api/';
+var base_url = 'http://garbage.xxw360.com/api/';
 
 import axios from 'axios';
 import qs from 'qs';
@@ -12,15 +12,22 @@ axios.defaults.baseURL ='';
 axios.interceptors.request.use(
   config => {
     // const token = getCookie('名称');注意使用的时候需要引入cookie方法，推荐js-cookie
-    console.log(config.method)
+    // console.log(config)
     if(config.method === 'get'){
       config.data = JSON.stringify(config.data);      
     } else{
       config.data = qs.stringify(config.data);      
     }
-    config.headers = {
-      'Content-Type':'application/x-www-form-urlencoded'
-    };
+    if(config.url == base_url + 'upload'){
+      config.headers = {
+        'Content-Type':'multipart/form-data'
+      };
+    }else{
+      config.headers = {
+        'Content-Type':'application/x-www-form-urlencoded'
+      };
+    }
+    
     return config; 
   },
   error => {

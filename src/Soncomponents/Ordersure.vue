@@ -224,6 +224,9 @@
     z-index: 999;
     background: #fafffb;
     overflow-y: auto;
+    .van-button__text{
+      color: #999999;
+    }
   }
   .van-popup{
     border-radius: 10px;

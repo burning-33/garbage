@@ -62,7 +62,7 @@
           <p class="iconfont fs20 bgPurple bR5 colorw">&#xe622;</p>
             <p>收货地址</p>
         </router-link>
-        <router-link to="" tag="div" class="flex tc">
+        <router-link :to="{name:'review',params:{title:'我的评价'}}" tag="div" class="flex tc">
           <p class="iconfont fs20 bgOrange bR5 colorw">&#xe7aa;</p>
             <p>我的评价</p>
         </router-link>
@@ -94,7 +94,8 @@ export default {
   },
   created(){
     let _this = this;
-    if(_this.GLOBAL.token ==''){
+    console.log(_this.GLOBAL.token)
+    if(_this.GLOBAL.token =='' || _this.GLOBAL.token === null){
       Toast('您还未登录，请先登录')
       setTimeout(function(){
         _this.$router.replace(
@@ -128,6 +129,7 @@ export default {
       })
       .catch(err => {
         console.log(err);
+        Toast('网络错误')
       });
     }
     

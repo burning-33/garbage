@@ -11,7 +11,7 @@
         </div>
         <div class="b-v-center register">
             <router-link :to="{name:'register',params:{title:'注册'}}" tag="p" class="flex">用户注册</router-link>
-            <router-link to="" tag="p" class="flex tr">忘记密码</router-link>
+            <router-link :to="{name:'forgetPwd',params:{title:'忘记密码'}}" tag="p" class="flex tr">忘记密码</router-link>
         </div>
         <button @click="login" class="bR5 bgGreen colorw fs18 btnLogin">登录</button>
     </div>

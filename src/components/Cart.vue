@@ -177,7 +177,7 @@
               console.log(response)
               if(response.code == 200){
                 //      计算总价
-                console.log('00')
+                console.log('00000000000')
                 selt.totalPrice()
               }else {
                 Toast('网络错误，稍后再试');

@@ -11,41 +11,51 @@
       <div class="content">
           <div class="details" v-for="(item,index) in orderList" :key="index">
             <div class="plr15 ptb10 b-v-center">
-              <p class="flex">订单编号：{{item.order_id}}</p>
-              <p class="tr colorEF flex">{{showStatus}}</p>
-          </div>
-          <div class="plr15 ptb10 b-v-center bgfe">
-              <div class="imgOrder"><img  :src="item.img" alt=""></div>
+              <p class="flex">订单编号：{{item.number}}</p>
+              <p class="tr colorEF">{{showStatus}}</p>
+            </div>
+          <div class="plr15 ptb10 b-v-center bgfe goodsItem" @click="toDetails(item.id)" v-for="(childItem,childIndex) in item.item" :key="childIndex">
+              <div class="imgOrder"><img  :src="childItem.goods_image" alt=""></div>
               <div class="flex ml15">
-                  <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{item.name}}</p>
-                  <p class="flex fs12">尺寸：{{item.size}}</p>
+                  <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{childItem.goods_name}}</p>
+                  <p class="flex fs12">规格：{{childItem.goods_format}}</p>
                   <div class="b-v-center">
-                      <p class="flex fs12">颜色分类：{{item.color}}</p>
-                      <p class="flex tr fs12 line-through">￥{{item.original}}</p>
+                      <p class="flex fs12">颜色分类：{{childItem.goods_color}}</p>
+                      <p class="flex tr fs12 line-through">￥{{childItem.goods_price}}</p>
                   </div>
                   <div class="b-v-center">
-                      <p class="flex fs12">数量：{{item.num}}</p>
-                      <p class="tr flex fs12 color333">￥{{item.current}}</p>
+                      <p class="flex fs12">数量：{{childItem.item_num}}</p>
+                      <p class="tr flex fs12 color333">￥{{childItem.goods_money}}</p>
                   </div>
               </div>
           </div>
           <div class="b-center plr15 ptb10 borderB ">
-              <p class="flex tr">优惠：￥{{reducePrice}}</p>
-              <p class="flex tr">实付：<span class="fs16 colorRed">￥{{item.actually}}</span></p>
+              <p class="flex tr">优惠：￥{{item.discount}}</p>
+              <p class="flex tr">实付：<span class="fs16 colorRed">￥{{item.all_price}}</span></p>
           </div>
           <div class=" ptb10 borderB10 overflow">
               <button @click="payMoney(item.text)" :class="item.color?'colorRed bR5 bgw borderR mr15 btnOrder fr':'bR5 bgw mr15 btnOrder border666 fr'" v-for="(item,index) in btnArr" :key="index">{{item.text}}</button>
           </div>
           </div>
       </div>
+      <infinite-loading @infinite="getOrderList" spinner="waveDots" ref="InfiniteLoading">
+        <span slot="no-results">
+          已经到底了~
+        </span>
+          <span slot="no-more">
+          已经到底了~
+        </span>
+        </infinite-loading>
       <ymalert ref="alert" :modal="alertText" />
       <ymDialog ref="dialog" :modal="modal" />
   </div>
 </template>
 
 <script>
+import { Toast } from "vant";
 import ymDialog from "../../common/dialog";
 import ymalert from "../../common/alert";
+import InfiniteLoading from 'vue-infinite-loading';
 export default {
   name: "orderList",
   data() {
@@ -57,61 +67,124 @@ export default {
       btnArr: [],
       showStatus: "待付款",
       orderObj: [],
+      page:1,
       orderList: [
-        {
-          order_id: "454545",
-          status: 1,
-          img: require("./goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        },
-        {
-          order_id: "454545",
-          status: 2,
-          img: require("./goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        },
-        {
-          order_id: "454545",
-          status: 3,
-          img: require("./goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        }
+        // {
+        //   order_id: "454545",
+        //   status: 1,
+        //   img: require("./goods.png"),
+        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
+        //   size: "M",
+        //   color: "绿色",
+        //   original: 30.0,
+        //   num: 1,
+        //   current: 20.0,
+        //   actually: 11.0
+        // },
+        // {
+        //   order_id: "454545",
+        //   status: 2,
+        //   img: require("./goods.png"),
+        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
+        //   size: "M",
+        //   color: "绿色",
+        //   original: 30.0,
+        //   num: 1,
+        //   current: 20.0,
+        //   actually: 11.0
+        // },
+        // {
+        //   order_id: "454545",
+        //   status: 3,
+        //   img: require("./goods.png"),
+        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
+        //   size: "M",
+        //   color: "绿色",
+        //   original: 30.0,
+        //   num: 1,
+        //   current: 20.0,
+        //   actually: 11.0
+        // }
       ],
       modal: {
         confirmText: "已收货",
         contentText: "确认收货",
-        cancelText:"未收货",
-        red:false
+        cancelText: "未收货",
+        red: false
       },
-      alertText:{
-          alertMsg:'请致电',
-          service:true
+      alertText: {
+        alertMsg: "请致电",
+        service: true
       }
     };
   },
   components: {
     ymDialog,
-    ymalert
+    ymalert,
+    InfiniteLoading
   },
   methods: {
+    getOrderList($state) {
+      let _this = this;
+      console.log(_this.selectedIndex,'selectedIndex')
+      _this.$fetch(_this.GLOBAL.base_url + "order", {
+          token: _this.GLOBAL.token,
+          status: _this.selectedIndex,
+          p: _this.page,
+          row: 3
+        })
+        .then(res => {
+          console.log("订单列表", res);
+          if (res.code == 200) {
+            _this.orderList = _this.orderList.concat(res.data.list);
+            if(res.data.list.length == 0){
+                res.data.all_page = 0
+            }else{
+              if (res.data.list[0].status == 0) {
+                  // 加载全部列表
+
+                } else if (res.data.list[0].status == 1) {
+                  // 待付款              
+                    _this.btnArr = [
+                      { text: "去付款", color: true, event: "payMoney" }
+                    ];
+                } else if (res.data.list[0].status == 2) {
+                  //待收货
+                    _this.btnArr = [
+                      { text: "查看物流", color: true, event: "logistics" },
+                      { text: "确认收货", color: false, event: "receipt" }
+                    ];
+                }else if (res.data.list[0].status == 3) {
+                  // 已完成
+                    _this.btnArr = [
+                      { text: "再次购买", color: false, event: "buyAgain" },
+                      { text: "去评价", color: true, event: "evaluate" },
+                      { text: "申请售后", color: false, event: "service" }
+                    ];
+                }
+            }
+            _this.page++;
+            if (_this.page > res.data.all_page) {
+              $state.complete();
+            } else {
+              $state.loaded();
+            }
+            
+          } else {
+            Toast(res.msg);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          Toast("网络错误");
+        });
+    },
+    toDetails(id){
+      this.$router.push({
+        name:'orderDetail',
+        params:{title:'商品详情',orderId:id}
+      })
+    },
     changeNav(index) {
       this.selectedIndex =
         this.selectedIndex == index ? this.selectedIndex : index;
@@ -121,7 +194,12 @@ export default {
       this.navId = selected;
       this.showStatus =
         selected == 1 ? "等待付款" : selected == 2 ? "已发货" : "已完成";
-      this.getOrderList();
+        this.page = 1;
+        this.spendInfo = [];
+        this.$nextTick(() => {
+          this.$refs.InfiniteLoading.$emit('$InfiniteLoading:reset');
+        });
+      // this.getOrderList();
     },
     payMoney(text) {
       if (text == "去付款") {
@@ -131,15 +209,15 @@ export default {
         this.$router.push({
           name: "logistics",
           params: { title: "物流详情" }
-        })
+        });
       } else if (text == "确认收货") {
         this.$refs.dialog
           .confirm()
           .then(() => {
-            console.log('已收货');
+            console.log("已收货");
           })
           .catch(() => {
-            console.log('未收货');
+            console.log("未收货");
           });
       } else if (text == "再次购买") {
         // 跳转到商品详情页面
@@ -147,41 +225,10 @@ export default {
         // 跳转到评价页面
       } else {
         // 售后
-        this.$refs.alert.hand().then(()=>{
-            }).catch(()=>{
-
-            })
-      }
-    },
-    getOrderList() {
-      let _this = this;
-      for (let i = 0; i < _this.orderList.length; i++) {
-        if (this.selectedIndex == 0) {
-          // 加载全部列表
-        } else if (this.selectedIndex == 1) {
-          // 待付款
-          if (_this.orderList[i].status == 1) {
-            _this.btnArr = [{ text: "去付款", color: true, event: "payMoney" }];
-          }
-        } else if (this.selectedIndex == 2) {
-          //待收货
-
-          if (_this.orderList[i].status == 2) {
-            _this.btnArr = [
-              { text: "查看物流", color: true, event: "logistics" },
-              { text: "确认收货", color: false, event: "receipt" }
-            ];
-          }
-        } else {
-          // 已完成
-          if (_this.orderList[i].status == 3) {
-            _this.btnArr = [
-              { text: "再次购买", color: false, event: "buyAgain" },
-              { text: "去评价", color: true, event: "evaluate" },
-              { text: "申请售后", color: false, event: "service" }
-            ];
-          }
-        }
+        this.$refs.alert
+          .hand()
+          .then(() => {})
+          .catch(() => {});
       }
     }
   },
@@ -194,7 +241,7 @@ export default {
           : this.$route.params.orderId == "待收货" ? 2 : 3;
       this.changeStatus(this.selectedIndex);
     }
-    this.getOrderList();
+    // this.getOrderList();
   }
 };
 </script>
@@ -225,6 +272,9 @@ export default {
   }
   .content {
     margin-top: 41px;
+    .goodsItem + .goodsItem{
+      margin-top: 10px;
+    }
   }
   .imgOrder > img {
     width: 75px;
@@ -237,10 +287,10 @@ export default {
     width: 75px;
     height: 25px;
   }
-  .borderR{
+  .borderR {
     border: 1px solid #fb4e26;
   }
-  .border666{
+  .border666 {
     border: 1px solid #666;
   }
 }

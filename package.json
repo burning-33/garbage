@@ -17,6 +17,7 @@
     "qs": "^6.5.2",
     "vant": "^1.1.8",
     "vue": "^2.5.2",
+    "vue-infinite-loading": "^2.3.1",
     "vue-router": "^3.0.1",
     "webpack-dev-server": "^2.9.1"
   },

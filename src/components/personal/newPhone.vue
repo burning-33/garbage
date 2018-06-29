@@ -36,7 +36,7 @@ export default {
       getCodetext: "获取验证码",
       modal: {
         confirmText: "ok",
-        contentText: "密码修改成功",
+        contentText: "更换成功",
         red: false,
         showCancel: false
       }
@@ -66,7 +66,7 @@ export default {
       let _this = this;
         _this
         .$fetch(_this.GLOBAL.base_url + "sms", {
-          mobile: _this.GLOBAL.mobile,
+          mobile: _this.phoneNum,
           type: "mobile"
         })
         .then(res => {
@@ -79,6 +79,7 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          Toast('网络请求超时')
         });
       
     },
@@ -91,12 +92,8 @@ export default {
         } else if (this.sms != this.validateCode) {
           Toast("验证码不正确");
         } else {
-          console.log(_this.GLOBAL.token,'电话号')
-          console.log(_this.phoneNum,'电话号')
-          console.log(_this.validateCode,'验证码')
-          console.log(_this.auth,'电话号')
           _this
-            .$put(_this.GLOBAL.base_url + "mobile",{
+            .$post(_this.GLOBAL.base_url + "mobile",{
               token:_this.GLOBAL.token,
               mobile: _this.phoneNum,
               code: Number(_this.validateCode),
@@ -111,6 +108,8 @@ export default {
                     )
                 }).catch(()=>{ 
                 })
+              }else{
+                Toast(res.msg);
               }
             })
             .catch(err => {

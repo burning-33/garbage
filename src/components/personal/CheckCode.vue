@@ -37,9 +37,7 @@ export default {
   },
   created(){
       this.from = this.$route.params.title
-      // console.log(this.$route.params.title)
-      // console.log(this.GLOBAL.mobile)
-      this.phoneNum = this.GLOBAL.mobile
+      this.phoneNum = this.$route.params.mobile 
   },
   methods: {
     getValidateCode() {

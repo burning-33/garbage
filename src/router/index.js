@@ -7,9 +7,11 @@ import Cart from '@/components/Cart'
 import Me from '@/components/Me'
 import login from '@/components/login/login'
 import register from '@/components/login/register'
+import forgetPwd from '@/components/login/forgetPwd'
 import PersonalInfo from '@/components/personal/PersonalInfo'
 import CheckCode from '@/components/personal/CheckCode'
 import editPhone from '@/components/personal/CheckCode'
+import review from '@/components/personal/review'
 import setPwd from '@/components/personal/setPwd'
 import newPhone from '@/components/personal/newPhone'
 import nikename from '@/components/personal/nikename'
@@ -22,6 +24,7 @@ import mySpend from '@/components/discounts/mySpend'
 import friendSpend from '@/components/discounts/friendSpend'
 import preferLevel from '@/components/discounts/preferLevel'
 import orderList from '@/components/personal/order/orderList'
+import orderDetail from '@/components/personal/order/orderDetail'
 import logistics from '@/components/personal/order/logistics'
 import Search from '@/components/Search'
 Vue.use(Router);
@@ -60,6 +63,12 @@ export default new Router({
       path: '/register',
       name: 'register',
       component: register,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/login/forgetPwd',
+      name: 'forgetPwd',
+      component: forgetPwd,
       meta:{showFooter:false}
     },
     {
@@ -117,6 +126,12 @@ export default new Router({
       meta:{showFooter:false}
     },
     {
+      path: '/Me/review',
+      name: 'review',
+      component: review,
+      meta:{showFooter:false}
+    },
+    {
       path: '/Me/address/addAddress',
       name: 'addAddress',
       component: addAddress,
@@ -150,6 +165,12 @@ export default new Router({
       path: '/Me/orderList',
       name: 'orderList',
       component: orderList,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/orderList/orderDetail',
+      name: 'orderDetail',
+      component: orderDetail,
       meta:{showFooter:false}
     },
     {

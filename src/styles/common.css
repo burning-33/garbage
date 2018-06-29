@@ -2,8 +2,8 @@
 @font-face {
   font-family: 'iconfont';
   /* project id 511696 */
-  src: url('//at.alicdn.com/t/font_511696_jpsom27qga.eot');
-  src: url('//at.alicdn.com/t/font_511696_jpsom27qga.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_511696_jpsom27qga.woff') format('woff'), url('//at.alicdn.com/t/font_511696_jpsom27qga.ttf') format('truetype'), url('//at.alicdn.com/t/font_511696_jpsom27qga.svg#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/font_511696_jqc3eo5nt2k.eot');
+  src: url('//at.alicdn.com/t/font_511696_jqc3eo5nt2k.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_511696_jqc3eo5nt2k.woff') format('woff'), url('//at.alicdn.com/t/font_511696_jqc3eo5nt2k.ttf') format('truetype'), url('//at.alicdn.com/t/font_511696_jqc3eo5nt2k.svg#iconfont') format('svg');
 }
 img {
   pointer-events: none;
@@ -1272,6 +1272,12 @@ input {
 .bg999 {
   background-color: #999;
 }
+.bgfe {
+  background-color: #f9f9f9;
+}
+.bgdf {
+  background-color: #dfdfdf;
+}
 /* 字体 */
 .colorw {
   color: #fff;
@@ -1325,6 +1331,13 @@ input {
 }
 .borderR {
   border: 1px solid #fb4e26;
+}
+.borderB10 {
+  border-bottom: 10px solid #f9f9f9;
+}
+.borderTB10 {
+  border-bottom: 10px solid #f9f9f9;
+  border-top: 10px solid #f9f9f9;
 }
 .border666 {
   border: 1px solid #666;
