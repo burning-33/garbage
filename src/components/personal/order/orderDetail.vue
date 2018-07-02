@@ -3,7 +3,7 @@
         <div class="ptb10 pl1 mlr15 borderB head">
             <p class="colorG">订单详情</p>
         </div>
-        <div class="plr15 ptb10 b-v-center borderTB10 goodsItem" @click="toDetails(item.id)" v-for="(childItem,childIndex) in detailObj.item" :key="childIndex">
+        <div class="plr15 ptb10 b-v-center borderT10 goodsItem" @click="toDetails(item.id)" v-for="(childItem,childIndex) in detailObj.item" :key="childIndex">
               <div class="imgOrder"><img  :src="childItem.goods_image" alt=""></div>
               <div class="flex ml15">
                   <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{childItem.goods_name}}</p>
@@ -18,21 +18,27 @@
                   </div>
               </div>
           </div>
-        <div class="plr15 ptb10 b-v-center">
+        <div class="plr15 pt5 b-v-center">
               <p class="flex">商品总价:</p>
               <p class="tr colorEF flex">￥{{detailObj.all_money}}</p>
         </div>
-        <div class="plr15 ptb10 b-v-center">
+        <div class="plr15 pt5 b-v-center">
               <p class="flex">运费金额:</p>
               <p class="tr colorEF flex">￥{{detailObj.freight}}</p>
         </div>
-        <div class="plr15 ptb10 b-v-center ">
+        <div class="plr15 ptb5 b-v-center ">
               <p class="flex color333">优惠金额:</p>
-              <p class="tr colorEF flex">￥{{detailObj.discount}}</p>
+              <p class="tr colorO1 flex ">￥-{{detailObj.discount}}</p>
         </div>
-        <div class="plr15 ptb10 b-v-center">
-              <p class="flex color333">订单总价:</p>
-              <p class="tr colorEF flex">￥{{detailObj.discount}}</p>
+        <div class="mlr15 pt5 b-v-center borderT">
+              <p class="flex color333 fs16">订单总价:</p>
+              <p class="tr colorRed flex">￥{{detailObj.all_price}}</p>
+        </div>
+        <div class="bgfe pg15 mt40">
+            <p>订单编号:{{detailObj.number}}</p>
+            <p>下单时间:{{detailObj.create_time}}</p>
+            <p>支付时间:{{detailObj.pay_time}}</p>
+            <p>发货时间:{{detailObj.update_time}}</p>
         </div>
     </div>
 </template>
@@ -84,8 +90,11 @@ export default {
         height: 1px;
         background-color: #6db655;
     }
+    .mt40{
+        margin-top: 50px;
+    }
     .goodsItem + .goodsItem{
-      margin-top: 10px;
+      border-bottom: 10px solid #f9f9f9;
     }
     .imgOrder > img {
         width: 75px;

@@ -4,17 +4,25 @@
       <router-link :to="{name: 'search'}" tag="div" class="sousuo">
           <van-icon name="search" />
       </router-link>
-      <div class="signBox" @click="login">
+      <div class="signBox" @click="login" v-if="denglu">
         <div class="iconfont">&#xe611;</div>
         <div class="sign">登录</div>
       </div>
+      <div class="signBox" v-else>
+        <div class="sign">用户名</div>
+      </div>
     </div>
     <div class="banner">
-      <van-swipe >
-        <van-swipe-item v-for="(item, index) in images" :key="index" >
-          <img :src="item.img" alt="" @click="goDetails(item.g_id)" class="bannerimg">
-        </van-swipe-item>
-      </van-swipe>
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" v-for="(item, index) in images" :key="index" @click="goDetails(item.g_id)" >
+            <img :src="item.img" class="bannerimg">
+          </div>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+
+      </div>
     </div>
     <div class="h1">推荐商品 <span class="iconfont">&#xe717;</span></div>
     <ul class="ul"
@@ -42,6 +50,7 @@
 <script>
   import Details from '../SonComponents/details.vue'
   import Vue from 'vue'
+  import Swiper from 'swiper'
   import { Swipe, SwipeItem } from 'vant';
   import { Lazyload } from 'vant';
   import { Waterfall } from 'vant';
@@ -61,7 +70,8 @@
         list: [],
         disabled: false,
         detshow:false,//是否显示详情页
-        detailsid:''
+        detailsid:'',
+        denglu:true
       }
     },
     directives: {
@@ -69,15 +79,25 @@
     },
     mounted: function () {
       const selt = this;
+      console.log(selt.GLOBAL.discount)
+      if(selt.GLOBAL.discount){
+        this.denglu = false
+      }else{
+        this.denglu = true
+      }
       selt.$fetch(selt.GLOBAL.base_url + 'index')
         .then((response) => {
           console.log(response.data.goods)
           selt.images= response.data.banner
           selt.list = response.data.goods
         })
+      this.swiper();
     },
     computed: {
 
+    },
+    created(){
+       console.log(this.GLOBAL.token)
     },
     methods: {
       loadMore() {
@@ -90,6 +110,7 @@
         }, 200);
       },
       goDetails(id){
+        console.log(id)
         this.detshow = true;
         this.detailsid = id
       },
@@ -99,7 +120,33 @@
       },
       login(){
         this.$router.push({ name: 'login', params: { title: '登录' }})
-      }
+      },
+  swiper() {
+    var mySwiper = new Swiper ('.swiper-container', {
+      direction: 'horizontal',
+      loop: true,
+      centeredSlides: true,
+      observer:true,//修改swiper自己或子元素时，自动初始化swiper
+      observeParents:true,//修改swiper的父元素时，自动初始化swiper
+      // 如果需要分页器
+      pagination: {
+        el: '.swiper-pagination',
+        // clickable: true,
+        // clickableClass : 'my-pagination-clickable',
+      },
+
+      // 如果需要前进后退按钮
+      // navigation: {
+      //   nextEl: '.swiper-button-next',
+      //   prevEl: '.swiper-button-prev',
+      // },
+      // autoplay: {
+      //   delay: 2000,
+      //   stopOnLastSlide: false,
+      //   disableOnInteraction: false,
+      // },
+    });
+  },
     },
   }
 

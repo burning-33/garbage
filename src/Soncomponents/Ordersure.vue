@@ -74,7 +74,7 @@
         </div>
       </div>
       <div class="sumBox">
-        <div class="sum">应付总金额  ￥360.00</div>
+        <div class="sum">应付总金额  ￥{{adress.all_money}}</div>
         <div class="yes" @click="payment">确定</div>
       </div>
       <van-popup v-model="show" >
@@ -106,11 +106,11 @@
     </van-popup>
         <van-popup v-model="showsucce">
           <div >
-        <div class="showBox">
+          <div class="showBox">
           <div class="h1">链接已复制</div>
           <div class="ok" @click="ok">OK</div>
+          </div>
         </div>
-      </div>
         </van-popup>
 
   </div>

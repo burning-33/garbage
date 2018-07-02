@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <div class="b-v-center mtb10 bgw ptb15 borderTB">
       <div class="imgHeader mlr20">
-        <img src="../assets/logo.png" alt="">
+        <img :src="user.head" alt="">
       </div>
       <router-link :to="{name:'PersonalInfo',params:{title:'个人信息',userInfo:user}}" tag="div" class="b-v-center flex">
         <div class="flex">
@@ -94,7 +94,6 @@ export default {
   },
   created(){
     let _this = this;
-    console.log(_this.GLOBAL.token)
     if(_this.GLOBAL.token =='' || _this.GLOBAL.token === null){
       Toast('您还未登录，请先登录')
       setTimeout(function(){
@@ -148,7 +147,7 @@ export default {
     height: 50px;
     overflow: hidden;
     border-radius: 50%;
-    background: #000000;
+    // background: #000000;
   }
   .iconNUm{
     position: relative;

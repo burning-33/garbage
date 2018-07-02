@@ -20,7 +20,7 @@ export default {
     return {
       firstPwd:'',
       secondPwd:'',
-      phoneNum:'18782065437',
+      phoneNum:'',
       auth:'',
       modal: {
         confirmText: "ok",
@@ -32,6 +32,7 @@ export default {
   },
   created(){
       let _this = this;
+      _this.phoneNum = _this.$route.params.phoneNum;
       if(_this.$route.params.login){
         _this.modal = {
           confirmText: "立即登录",
@@ -42,7 +43,7 @@ export default {
       }
       _this
         .$fetch(_this.GLOBAL.base_url + "pwd", {
-          mobile: _this.GLOBAL.mobile,
+          mobile: _this.phoneNum,
           code: _this.$route.params.code
         })
         .then(res => {

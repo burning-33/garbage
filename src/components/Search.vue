@@ -85,7 +85,7 @@
         iconactive:false,//选中销量或者价格
         list: '',
         disabled: false,
-        searchShow:true,//是否显示搜索内容
+        searchShow:false,//是否显示搜索内容
         neirong:'',//输入框内容
         arr:[1,2,1,3],//历史搜索
         clearShow:false,//清楚按钮
@@ -93,7 +93,7 @@
         detailsid:'',
         volumedown:true,//销量向下
         priceDown:true,//销量向下
-        axioscanshu:''
+        axioscanshu:'is_hot'
       }
     },
     mounted: function () {
@@ -133,15 +133,15 @@
         //   console.error('请求错误')
         // })
         const selt = this;
-        var neirong = selt.selt
-        selt.$fetch(selt.GLOBAL.base_url + 'goods',{params:
+        var neirong = selt.neirong
+        selt.$fetch(selt.GLOBAL.base_url + 'goods',
             {
               keyword:neirong,
               order:this.axioscanshu
-            },})
+            },)
           .then((response) => {
             console.log(response)
-            selt.list = response.data
+            selt.list = response.data.list
           })
       },
       // 分类查询点击
@@ -178,7 +178,7 @@
           this.priceDown = true;
         }
         this.huoqu();
-        console.log(this.keyword)
+        console.log(this.neirong)
       },
       // 加载更多
       loadMore() {
@@ -197,6 +197,8 @@
         }else {
           this.searchShow = false
           this.clearShow = true
+
+          this.huoqu()
         }
       },
       // 删除历史记录

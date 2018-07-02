@@ -44,7 +44,7 @@ export default {
     getValidateCode() {
       let _this = this;
         _this.$fetch(_this.GLOBAL.base_url + "sms", {
-            mobile: _this.GLOBAL.mobile,
+            mobile: _this.phoneNum,
             type: "pwd"
         })
         .then(res => {
@@ -74,7 +74,7 @@ export default {
             } else {
                 this.$router.replace({
                 name: "setPwd",
-                params: { title: "设置密码" ,code:this.validateCode,login:true}
+                params: { title: "设置密码" ,code:this.validateCode,login:true,phoneNum:_this.phoneNum}
                 });
             }
         }

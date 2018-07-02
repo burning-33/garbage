@@ -26,6 +26,9 @@ export default {
       }
     };
   },
+  created(){
+    this.imgUrl = this.$route.params.originalInfo.head;
+  },
   methods: {
       // 选择图片上传
     uploadHeadImg: function () {
@@ -39,7 +42,6 @@ export default {
       var reader = new FileReader()
       reader.onload = (data) => {
         console.log('data',data)
-        _this.is_show = true
         let res = data.target || data.srcElement
         _this.$post(_this.GLOBAL.base_url + 'upload',{
           token:_this.GLOBAL.token,
@@ -49,6 +51,7 @@ export default {
           console.log(res);
           if (res.code == 200) {
             _this.imgUrl = res.result
+            _this.is_show = true
           }else{
             Toast(res.msg)
           }
@@ -58,7 +61,6 @@ export default {
         });
       }
       reader.readAsDataURL(file)
-      
     },
     commit(){
       let _this = this;

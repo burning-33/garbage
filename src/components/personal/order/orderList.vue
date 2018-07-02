@@ -14,28 +14,28 @@
               <p class="flex">订单编号：{{item.number}}</p>
               <p class="tr colorEF">{{showStatus}}</p>
             </div>
-          <div class="plr15 ptb10 b-v-center bgfe goodsItem" @click="toDetails(item.id)" v-for="(childItem,childIndex) in item.item" :key="childIndex">
-              <div class="imgOrder"><img  :src="childItem.goods_image" alt=""></div>
-              <div class="flex ml15">
-                  <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{childItem.goods_name}}</p>
-                  <p class="flex fs12">规格：{{childItem.goods_format}}</p>
-                  <div class="b-v-center">
-                      <p class="flex fs12">颜色分类：{{childItem.goods_color}}</p>
-                      <p class="flex tr fs12 line-through">￥{{childItem.goods_price}}</p>
-                  </div>
-                  <div class="b-v-center">
-                      <p class="flex fs12">数量：{{childItem.item_num}}</p>
-                      <p class="tr flex fs12 color333">￥{{childItem.goods_money}}</p>
-                  </div>
-              </div>
-          </div>
-          <div class="b-center plr15 ptb10 borderB ">
-              <p class="flex tr">优惠：￥{{item.discount}}</p>
-              <p class="flex tr">实付：<span class="fs16 colorRed">￥{{item.all_price}}</span></p>
-          </div>
-          <div class=" ptb10 borderB10 overflow">
-              <button @click="payMoney(item.text)" :class="item.color?'colorRed bR5 bgw borderR mr15 btnOrder fr':'bR5 bgw mr15 btnOrder border666 fr'" v-for="(item,index) in btnArr" :key="index">{{item.text}}</button>
-          </div>
+            <div class="plr15 ptb10 b-v-center bgfe goodsItem" @click="toDetails(item.id)" v-for="(childItem,childIndex) in item.item" :key="childIndex">
+                <div class="imgOrder"><img  :src="childItem.goods_image" alt=""></div>
+                <div class="flex ml15">
+                    <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{childItem.goods_name}}</p>
+                    <p class="flex fs12">规格：{{childItem.goods_format}}</p>
+                    <div class="b-v-center">
+                        <p class="flex fs12">颜色分类：{{childItem.goods_color}}</p>
+                        <p class="flex tr fs12 line-through">￥{{childItem.goods_price}}</p>
+                    </div>
+                    <div class="b-v-center">
+                        <p class="flex fs12">数量：{{childItem.item_num}}</p>
+                        <p class="tr flex fs12 color333">￥{{childItem.goods_money}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="b-center plr15 ptb10 borderB ">
+                <p class="flex tr">优惠：￥{{item.discount}}</p>
+                <p class="flex tr">实付：<span class="fs16 colorRed">￥{{item.all_price}}</span></p>
+            </div>
+            <div class=" ptb10 borderB10 overflow">
+                <button @click="payMoney(btnItem.text,item.id)" :class="btnItem.color?'colorRed bR5 bgw borderR mr15 btnOrder fr':'bR5 bgw mr15 btnOrder border666 fr'" v-for="(btnItem,btnIndex) in btnArr" :key="btnIndex">{{btnItem.text}}</button>
+            </div>
           </div>
       </div>
       <infinite-loading @infinite="getOrderList" spinner="waveDots" ref="InfiniteLoading">
@@ -66,45 +66,8 @@ export default {
       reducePrice: 0,
       btnArr: [],
       showStatus: "待付款",
-      orderObj: [],
       page:1,
       orderList: [
-        // {
-        //   order_id: "454545",
-        //   status: 1,
-        //   img: require("./goods.png"),
-        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-        //   size: "M",
-        //   color: "绿色",
-        //   original: 30.0,
-        //   num: 1,
-        //   current: 20.0,
-        //   actually: 11.0
-        // },
-        // {
-        //   order_id: "454545",
-        //   status: 2,
-        //   img: require("./goods.png"),
-        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-        //   size: "M",
-        //   color: "绿色",
-        //   original: 30.0,
-        //   num: 1,
-        //   current: 20.0,
-        //   actually: 11.0
-        // },
-        // {
-        //   order_id: "454545",
-        //   status: 3,
-        //   img: require("./goods.png"),
-        //   name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-        //   size: "M",
-        //   color: "绿色",
-        //   original: 30.0,
-        //   num: 1,
-        //   current: 20.0,
-        //   actually: 11.0
-        // }
       ],
       modal: {
         confirmText: "已收货",
@@ -140,26 +103,30 @@ export default {
             if(res.data.list.length == 0){
                 res.data.all_page = 0
             }else{
-              if (res.data.list[0].status == 0) {
-                  // 加载全部列表
-
-                } else if (res.data.list[0].status == 1) {
+              if (res.data.list[0].status == 1) {
                   // 待付款              
                     _this.btnArr = [
-                      { text: "去付款", color: true, event: "payMoney" }
+                      { text: "去付款", color: true}
                     ];
                 } else if (res.data.list[0].status == 2) {
                   //待收货
                     _this.btnArr = [
-                      { text: "查看物流", color: true, event: "logistics" },
-                      { text: "确认收货", color: false, event: "receipt" }
+                      { text: "查看物流", color: true },
+                      { text: "确认收货", color: false}
                     ];
                 }else if (res.data.list[0].status == 3) {
                   // 已完成
                     _this.btnArr = [
-                      { text: "再次购买", color: false, event: "buyAgain" },
-                      { text: "去评价", color: true, event: "evaluate" },
-                      { text: "申请售后", color: false, event: "service" }
+                      { text: "再次购买", color: false },
+                      { text: "去评价", color: true },
+                      { text: "申请售后", color: false }
+                    ];
+                }else if (res.data.list[0].status == 4) {
+                  // 已完成
+                    _this.btnArr = [
+                      { text: "申请售后", color: false},
+                      { text: "已评价", color: false },
+                      { text: "再次购买", color: false},
                     ];
                 }
             }
@@ -195,13 +162,15 @@ export default {
       this.showStatus =
         selected == 1 ? "等待付款" : selected == 2 ? "已发货" : "已完成";
         this.page = 1;
-        this.spendInfo = [];
+        this.orderList = [];
         this.$nextTick(() => {
           this.$refs.InfiniteLoading.$emit('$InfiniteLoading:reset');
         });
       // this.getOrderList();
     },
-    payMoney(text) {
+    payMoney(text,id) {
+      let _this = this;
+      console.log(id)
       if (text == "去付款") {
         // 跳转到确认订单页面
       } else if (text == "查看物流") {
@@ -214,16 +183,35 @@ export default {
         this.$refs.dialog
           .confirm()
           .then(() => {
-            console.log("已收货");
+            _this.$post(_this.GLOBAL.base_url+'confirm',{
+              token: _this.GLOBAL.token,
+              id:id
+            })
+            .then(res => {
+              if(res.code == 200){
+                _this.selectedIndex = 3
+                _this.page = 1;
+                _this.orderList = [];
+                _this.$nextTick(() => {
+                  _this.$refs.InfiniteLoading.$emit('$InfiniteLoading:reset');
+                });
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
           })
           .catch(() => {
-            console.log("未收货");
           });
       } else if (text == "再次购买") {
         // 跳转到商品详情页面
       } else if (text == "去评价") {
         // 跳转到评价页面
-      } else {
+        this.$router.push({
+          name: "toReview",
+          params: { title: "评价订单",orderId:id }
+        });
+      } else if (text == "申请售后"){
         // 售后
         this.$refs.alert
           .hand()

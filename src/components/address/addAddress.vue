@@ -103,7 +103,7 @@ export default {
               .then(res => {
                 console.log('修改地址',res);
                 if(res.code == 200){
-                  Toast('修改成功');
+                  Toast.success('修改成功');
                   setTimeout(function(){
                     _this.$router.replace({
                       name: "addressList",
@@ -130,7 +130,7 @@ export default {
             .then(res => {
               console.log('新增地址',res);
               if(res.code == 200){
-                Toast('添加成功');
+                Toast.success('添加成功');
                 setTimeout(function(){
                   _this.$router.replace({
                     name: "addressList",

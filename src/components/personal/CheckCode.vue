@@ -45,7 +45,7 @@ export default {
       if(this.from == '设置密码'){
         _this
         .$fetch(_this.GLOBAL.base_url + "sms", {
-          mobile: _this.GLOBAL.mobile,
+          mobile: _this.phoneNum,
           type: "pwd"
         })
         .then(res => {
@@ -62,7 +62,7 @@ export default {
       }else{
         _this
         .$fetch(_this.GLOBAL.base_url + "sms", {
-          mobile: _this.GLOBAL.mobile,
+          mobile: _this.phoneNum,
           type: "verify"
         })
         .then(res => {
@@ -90,7 +90,7 @@ export default {
         if(this.from == '设置密码'){
           this.$router.replace({
             name: "setPwd",
-            params: { title: "设置密码" ,code:this.validateCode}
+            params: { title: "设置密码" ,code:this.validateCode,phoneNum:_this.phoneNum}
           });
         }else{
           this.$router.replace({
@@ -136,7 +136,7 @@ export default {
     width: 290px;
     height: 44px;
     margin: auto;
-    border-radius: 10px;
+    border-radius: 5px;
     margin-top: 80px;
     color: #fff;
     font-size: 20px;

@@ -19,77 +19,40 @@
                 <van-col span="9" class="color333 ptb5">加入时间</van-col>
                 <van-col span="8" class="color333 ptb5">{{isActive == 1?'联系电话':'消费金额'}}</van-col>
             </van-row>
-            <van-row class="tc mt10" v-for="(item,index) in spendInfo" :key="index">
+            <div class="scroll">
+              <van-row class="tc mt10" v-for="(item,index) in spendInfo" :key="index">
                 <van-col  span="7">{{item.nickname}}</van-col>
                 <van-col  span="9">{{item.regdate}}</van-col>
                 <van-col span="8">{{isActive == 0? Number(item.money):item.mobile}}</van-col>
-            </van-row>
+              </van-row>
+              <infinite-loading @infinite="getspendInfo" spinner="waveDots" ref="InfiniteLoading">
+                <span slot="no-results">
+                  当前还没有消费记录~
+                </span>
+                  <span slot="no-more">
+                  已经到底了~
+                </span>
+              </infinite-loading>
+            </div>
+            
         </div>
-        <infinite-loading @infinite="getspendInfo" spinner="waveDots" ref="InfiniteLoading">
-        <span slot="no-results">
-          当前还没有相关订单~
-        </span>
-          <span slot="no-more">
-          已经到底了~
-        </span>
-        </infinite-loading>
+        
     </div>
   </div>
 </template>
 
 <script>
+import { Toast } from "vant";
 import InfiniteLoading from 'vue-infinite-loading';
 export default {
   name: "mySpend",
   data() {
     return {
-      spendInfo: [
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        },
-        {
-          name: "小李子",
-          time: "2018-06-1",
-          money: "20.00",
-          phone: "13547393115"
-        }
-      ],
+      spendInfo: [],
       isActive: 0,
       total: "",
-      page:1
+      page:1,
+      pageSize:2
     };
   },
   methods: {
@@ -110,7 +73,7 @@ export default {
             token: _this.GLOBAL.token,
             type: "已消费",
             p: _this.page,
-            row: 2
+            row: _this.pageSize
           })
           .then(res => {
             console.log("已消费", res);
@@ -118,7 +81,7 @@ export default {
               _this.total = Number(res.data.all_price.money);
               _this.spendInfo = _this.spendInfo.concat(res.data.list);
               _this.page++;
-              if (_this.page > res.data.totalPages) {
+              if (_this.page > res.data.all_page) {
                 $state.complete();
               } else {
                 $state.loaded();
@@ -135,7 +98,7 @@ export default {
             token: _this.GLOBAL.token,
             type: "未消费",
             p: _this.page,
-            row: 2
+            row: _this.pageSize
           })
           .then(res => {
             console.log("未消费", res);
@@ -143,7 +106,7 @@ export default {
               _this.total = Number(res.data.all_price.money);
               _this.spendInfo = _this.spendInfo.concat(res.data.list);
               _this.page++;
-              if (_this.page > res.data.totalPages) {
+              if ( _this.page > res.data.all_page) {
                 $state.complete();
               } else {
                 $state.loaded();
@@ -176,7 +139,10 @@ export default {
   .myHead {
     height: 93px;
   }
-
+  .scroll{
+    height: 56vh;
+    overflow: auto;
+  }
   .color333 + .color333 {
     border-left: 1px solid #dfdfdf;
   }
@@ -194,9 +160,6 @@ export default {
   }
   .borderL {
     border-left: 1px solid #dfdfdf;
-  }
-  .middle{
-    
   }
 }
 </style>

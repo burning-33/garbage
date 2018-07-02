@@ -153,8 +153,10 @@
         for(var a=0;a< arrI.length; a++){
           mon += Number(this.bookList[arrI[a]].money)* this.bookList[arrI[a]].num;
           var obj={};
-          obj.a_id = this.bookList[arrI[a]].id;
+          obj.a_id = this.bookList[arrI[a]].a_id;
           obj.num = this.bookList[arrI[a]].num;
+          console.log(arrI)
+          console.log(this.bookList[arrI[a]].a_id)
           console.log(obj)
           arrlist.push(obj)
         }
@@ -401,7 +403,7 @@
     margin: 50px auto;
     text-align: center;
     h5{
-      color: red;
+      color: #73ab1d;
       position: absolute;
       right: 10px;
       font-size: 16px;
@@ -516,12 +518,12 @@
             padding: 0;
             span{
               display: inline-block;
-              width: 20px;
-              height: 20px;
+              width: 26px;
+              height: 26px;
               border: 1px solid #c0c0c0;
               padding:0;
               margin: 0;
-              line-height: 20px;
+              line-height: 26px;
               text-align: center;
             }
           }

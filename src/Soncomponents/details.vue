@@ -19,13 +19,14 @@
       <span class="oldprice">￥{{list.goods.price}}</span>
       <span class="newprice">￥{{list.goods.money}}</span>
     </div>
-    <div class="commentAll">
-      <span class="lvse">商品评论（{{list.comment.all_count}}）</span>
-      <span @click="goComment">更多评论 ></span>
-    </div>
-    <div class="commentWrapper">
-      <div class="commentItem">
-        <div class="headBox">
+    <div v-if="list.comment">
+         <div class="commentAll" >
+          <span class="lvse">商品评论（{{list.comment.all_count}}）</span>
+          <span @click="goComment">更多评论 ></span>
+        </div>
+        <div class="commentWrapper">
+          <div class="commentItem">
+            <div class="headBox">
           <img :src="list.comment.member.head" alt="" class="head">
           <span>{{list.comment.member.nickname}}</span>
         </div>
@@ -33,15 +34,19 @@
           <span>({{list.comment.num}})</span>
           <span class="iconfont zan" :class="{zanactive:zanactive}" @click="zan">&#xe677;</span>
         </div>
-
-      </div>
+      
+    </div>
       <div>{{list.comment.content}}</div>
       <div class="time">{{list.comment.create_time}}</div>
     </div>
+    </div>
+    <div v-if="!list.comment">
+        <div class="commentAll" >
+          <span class="lvse">商品评论（0）</span>
+        </div>
+    </div>
     <div class="xiangqing">商品详情</div>
     <div class="productImg" v-html="list.goods.content">
-      <!--<div class="fuwenben" v-html="list.goods.content"></div>-->
-      <!--<img src="" alt="">-->
     </div>
     <div class="buy">
       <div class="add" @click="addCart">
@@ -70,13 +75,13 @@
         <div class="section">
           <div class="h2">颜色分类</div>
           <div class="fenleiBox">
-              <span @click="fenleiBtn(index)" v-for="(item,index) in yansefenlei" class="fenlei" :class="[isActive == index? 'isActive':'']">{{item.name}}</span>
+              <span @click="fenleiBtn(index)" v-for="(item,index) in yansefenlei" :key="index" class="fenlei" :class="[isActive == index? 'isActive':'']">{{item.name}}</span>
           </div>
         </div>
         <div class="section">
           <div class="h2">规格分类</div>
           <div class="fenleiBox">
-            <span @click="fenleipreBtn(index)" v-for="(item,index) in fenlei" class="fenlei fenleipri" :class="[isActiveprive == index? 'isActive':'']">{{item}}</span>
+            <span @click="fenleipreBtn(index)" v-for="(item,index) in fenlei" :key="index"  class="fenlei fenleipri" :class="[isActiveprive == index? 'isActive':'']">{{item}}</span>
           </div>
         </div>
         <div class="section yunsuan">
@@ -137,6 +142,7 @@
         v-if="commentShow"
         @commentfalse = 'commentfalse'
         :idNum="idNum"
+        :comment = "comment"
       />
     </transition>
   </div>
@@ -145,7 +151,7 @@
 <script>
   import Comment from '../Soncomponents/Comment'
   import Ordersure from '../Soncomponents/Ordersure'
-
+  // import Global from '../components/Global'
   import Vue from 'vue'
   import { Swipe, SwipeItem } from 'vant';
   import { Toast } from 'vant';
@@ -176,7 +182,7 @@
         num:1, // 数量
         unitPrice:'',//单价
         payment:'￥0.00',//实际付款
-        discount:1,//优惠价格
+        discount:'0',//优惠价格
         cartMark:false,
         heji:'',//加入购物车合计
         ordershow:false,//购买订单详情
@@ -186,8 +192,12 @@
       }
     },
     mounted: function(){
-
       const selt = this;
+      console.log(selt.GLOBAL.discount)
+      if(!selt.GLOBAL.discount){
+        selt.GLOBAL.discount = 0
+      }
+      this.discount = selt.GLOBAL.discount
       console.log(selt.detailsid)
       selt.$fetch(selt.GLOBAL.base_url + 'goods/' + selt.detailsid)
         .then((response) => {
@@ -205,6 +215,10 @@
           // 单价默认值
           selt.unitPrice = response.data.format[0].color[0].price;
           selt.heji = response.data.format[0].color[0].price;
+          selt.comment = response.data.comment.all_count
+         
+          this.paymentMoney()
+      
           // 判断是否点赞
           if(response.data.comment.star == 0){
             selt.zanactive = false
@@ -236,7 +250,7 @@
         }else if(this.zanactive == false){
           this.list.comment.num -=1
         }
-        console.log(this.list.comment.num)
+    
       },
       shopping(){
         this.show = true
@@ -270,6 +284,8 @@
       //实际付款
       paymentMoney(){
         this.payment = (this.allPrice - this.discount).toFixed(2)
+        console.log(this.allPrice)
+        console.log(this.allPrice- this.discoun)
       },
       //    减号
       reduce() {
@@ -298,25 +314,27 @@
         this.cartMark = false
       },
       sure(){
+        const  token = sessionStorage.getItem("token");
+        if(!token){
+          Toast('请登录');
+        }else {
         this.show1 = false;
         this.cartMark = false;
-        const  token = sessionStorage.getItem("token");
         // Toast('加入购物车成功');
         const selt = this;
         var num = selt.num;
         var id = selt.list.goods.id;
-        console.log(token)
-        selt.$post(selt.GLOBAL.base_url + "cart", {token: token,a_id: id,num:num})
-          .then(res => {
-            console.log(res);
-            Toast(res.msg)
-            if(res.code == '200'){
-              this.show1 = false
-              this.cartMark = false
-            }
-
-            // Toast('加入购物车成功');
-          })
+          selt.$post(selt.GLOBAL.base_url + "cart", {token: token,a_id: id,num:num})
+            .then(res => {
+              console.log(res);
+              Toast(res.msg)
+              if(res.code == '200'){
+                this.show1 = false
+                this.cartMark = false
+              }
+              // Toast('加入购物车成功');
+            })
+        }
       },
       orderfalse(){
         this.ordershow = false
@@ -340,7 +358,6 @@
         this.idNum = this.list.goods.id
         this.show = false
         this.commentShow = true
-        console.log('000')
       }
     },
   }
@@ -741,8 +758,11 @@
     margin-bottom: 60px;
     box-sizing: border-box;
     overflow-x: hidden;
+    .imgfu{
+      width: 50px !important
+    }
     img{
-      width: 100%;
+      width: 100% !important
     }
   }
   .van-dialog__content .van-dialog__message{

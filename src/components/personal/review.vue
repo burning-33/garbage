@@ -2,44 +2,45 @@
   <div class="review">
       <!-- 内容 -->
       <div class="content">
-          <div class="details borderB10" v-for="(item,index) in orderList" :key="index">
+          <div class="details borderB10" v-for="(item,index) in reviewList" :key="index">
             <div class="plr15 ptb10 b-v-center">
-              <p class="flex">订单编号：{{item.order_id}}</p>
-              <p class="tr colorEF flex">{{item.create_time}}2013-12-21 14:00</p>
+              <p class="flex">订单编号：{{item.order_number}}</p>
+              <p class="tr colorEF flex">{{item.order_time}}</p>
             </div>
             <div class="plr15 ptb10 b-v-center bgfe">
-                <div class="imgOrder"><img  :src="item.img" alt=""></div>
+                <div class="imgOrder"><img  :src="item.goods_image" alt=""></div>
                 <div class="flex ml15">
-                    <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{item.name}}</p>
-                    <p class="flex fs12">尺寸：{{item.size}}</p>
+                    <p class="fs15 color333 ellipsis" style="width:255px;height:27px;">{{item.goods_name}}</p>
+                    
                     <div class="b-v-center">
-                        <p class="flex fs12">颜色分类：{{item.color}}</p>
-                        <p class="flex tr fs12 line-through">￥{{item.original}}</p>
+                        <p class="flex fs12">规格：{{item.goods_format}}</p>
+                        <p class="flex tr fs12 line-through">￥{{item.goods_price}}</p>
                     </div>
                     <div class="b-v-center">
-                        <p class="flex fs12">数量：{{item.num}}</p>
-                        <p class="tr flex fs12 color333">￥{{item.current}}</p>
+                        <!-- <p class="flex fs12">数量：1</p> -->
+                        <p class="flex fs12">颜色分类：{{item.goods_color}}</p>
+                        <p class="tr flex fs12 color333">￥{{item.goods_money}}</p>
                     </div>
                 </div>
             </div>
             <div class="plr15 ptb10 b-v-center">
-              <p class="flex">我的评价</p>
-              <p class="tr colorEF flex">{{item.create_time}}(1021) <span class="iconfont fs18 colorRed">&#xe677;</span> </p>
+              <p class="">我的评价</p>
+              <p class="tr colorEF flex">({{item.num}}) <span class="iconfont fs18 colorRed">&#xe677;</span> </p>
             </div>
             <div class="plr15 pb10">
-                <p class="color333">东西很不错，可以装很多东西，而且还特别结实，赞一个,下次还会购买。</p>
-                <p class="tr pr15">2013-12-21 14:00</p>
-            </div>
+                <p class="color333">{{item.content}}</p>
+                <p class="tr pr15">{{item.create_time}}</p>
+            </div>  
           </div>
       </div>
-      <!-- <infinite-loading @infinite="getOrderList" spinner="waveDots" ref="InfiniteLoading">
+      <infinite-loading @infinite="getreviewList" spinner="waveDots" ref="InfiniteLoading">
         <span slot="no-results">
-          您还没有评论商品~
+          已经到底了~
         </span>
           <span slot="no-more">
           已经到底了~
         </span>
-        </infinite-loading> -->
+        </infinite-loading>
   </div>
 </template>
 
@@ -54,44 +55,8 @@ export default {
     return {
       
       page:1,
-      orderList: [
-        {
-          order_id: "454545",
-          status: 1,
-          img: require("./order/goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        },
-        {
-          order_id: "454545",
-          status: 2,
-          img: require("./order/goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        },
-        {
-          order_id: "454545",
-          status: 3,
-          img: require("./order/goods.png"),
-          name: "全生物降解垃圾袋家用塑料袋加厚中号绿色环保一次性袋厨房...",
-          size: "M",
-          color: "绿色",
-          original: 30.0,
-          num: 1,
-          current: 20.0,
-          actually: 11.0
-        }
-      ],
+      pageSize:2,
+      reviewList: [],
     };
   },
   components: {
@@ -100,10 +65,33 @@ export default {
     InfiniteLoading
   },
   methods: {
-    
+    getreviewList($state){
+        let _this = this;
+    _this.$fetch(_this.GLOBAL.base_url + 'comment_member',{
+      token:_this.GLOBAL.token,
+      p:this.page,
+      row:this.pageSize
+    })
+    .then(res => {
+      console.log('评论列表',res);
+        if (res.code == 200) {
+          _this.reviewList = _this.reviewList.concat(res.data.list);
+          _this.page++;
+              if (_this.page > res.data.all_page || res.data.all_page === '') {
+                $state.complete();
+              } else {
+                $state.loaded();
+              }
+        } else {
+            Toast(res.msg);
+        }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+    }
   },
   created() {
-    let _this = this;
     
   }
 };

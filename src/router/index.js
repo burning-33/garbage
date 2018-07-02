@@ -26,6 +26,8 @@ import preferLevel from '@/components/discounts/preferLevel'
 import orderList from '@/components/personal/order/orderList'
 import orderDetail from '@/components/personal/order/orderDetail'
 import logistics from '@/components/personal/order/logistics'
+import toReview from '@/components/personal/order/toReview'
+import writingReview from '@/components/personal/order/writingReview'
 import Search from '@/components/Search'
 Vue.use(Router);
 
@@ -36,6 +38,7 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+      meta:{act:'4'}
     },
     {
       path: '/Classify',
@@ -174,9 +177,21 @@ export default new Router({
       meta:{showFooter:false}
     },
     {
-      path: '/Me/logistics',
+      path: '/Me/orderList/logistics',
       name: 'logistics',
       component: logistics,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/orderList/toReview',
+      name: 'toReview',
+      component: toReview,
+      meta:{showFooter:false}
+    },
+    {
+      path: '/Me/orderList/writingReview',
+      name: 'writingReview',
+      component: writingReview,
       meta:{showFooter:false}
     },
     {

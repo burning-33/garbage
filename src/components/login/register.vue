@@ -28,6 +28,10 @@
             <p class="iconfont fs20 colorccc pr15">&#xe640;</p>
             <input class="flex" v-model="secondPwd" type="password" placeholder="再次输入密码(6-12位数字、字母)"/>
         </div>
+        <div class="borderccc bR5 b-v-center btnWidth pg15">
+            <p class="iconfont fs16 colorccc pr15">&#xe637;</p>
+            <input class="flex" v-model="invitation" type="number" placeholder="请输入邀请码"/>
+        </div>
         <button @click="register" class="bR5 bgGreen colorw fs18 btnLogin">注册</button>
     </div>
   </div>
@@ -43,11 +47,25 @@ export default {
       phoneNum: "",
       inputPwd: "",
       secondPwd: "",
+      invitation:'',
       //倒计时
       is_show: true,
       last_time:'',
       getCodetext:'获取验证码'
     };
+  },
+  created(){
+     //设置或获取整个 URL 为字符串。
+      // console.log(window.location.href);
+    // let url = 'http://localhost:8080/register?invitation_doe=123456';
+    let url = window.location.href; 
+    if (url.indexOf("?") != -1) { 
+        var strs = url.split("&");  
+        for(var i = 0; i < strs.length; i ++) {
+          this.invitation = strs[i].split("=")[1]
+        }  
+    } 
+     
   },
   computed: {},
   methods: {
@@ -78,7 +96,7 @@ export default {
     },
     register() {
       let _this = this;
-      // console.log(_this.phoneNum, _this.sms, _this.inputPwd, _this.secondPwd); 
+      console.log(_this.phoneNum, _this.sms, _this.inputPwd, _this.secondPwd); 
       if (_this.sms == '') {
         Toast("请输入验证码");
       } else if (_this.sms == '') {
@@ -88,16 +106,25 @@ export default {
       } else if(_this.inputPwd !== _this.secondPwd){
         Toast("两次密码不一致");
       } else{
+        if(_this.invitation){
+          if(_this.invitation.length !=6){
+            Toast("请输入6位邀请码");
+          }
+        }
          _this
         .$post(_this.GLOBAL.base_url + "reg", {
           mobile: _this.phoneNum,
           code: _this.sms,
-          password: _this.inputPwd
+          password: _this.inputPwd,
+          invitation_doe:_this.invitation
         })
         .then(res => {
           console.log(res);
           if(res.code == 200){
-            Toast.success('注册成功');
+            Toast.success('注册成功,请前往登录');
+            setTimeout(function(){
+              _this.$router.replace({name: 'login',params:{title:'登录'}})
+            },3000)
           }else{
             Toast(res.msg)
           }
@@ -117,7 +144,7 @@ export default {
 .register {
   overflow: hidden;
   .hvMiddle {
-    margin-top: 100px;
+    margin-top: 80px;
   }
   .btnWidth {
     width: 290px;
