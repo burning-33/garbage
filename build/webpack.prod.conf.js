@@ -38,8 +38,7 @@ const webpackConfig = merge(baseWebpackConfig, {
           warnings: false
         },
         mangle: {
-          safari10: true,
-          safari9: true
+          safari10: true
         }
       },
       sourceMap: config.build.productionSourceMap,
