@@ -10,6 +10,9 @@
 .van-field__icon {
   right: 10px;
 }
+.van-button--primary {
+  background-color: #81b824;
+}
 .detail .van-button__text {
   color: #6c6c6c;
 }

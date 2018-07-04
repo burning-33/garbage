@@ -41,37 +41,20 @@ export default {
           showCancel: false
         }
       }
-      _this
-        .$fetch(_this.GLOBAL.base_url + "pwd", {
-          mobile: _this.phoneNum,
-          code: _this.$route.params.code
-        })
-        .then(res => {
-          console.log(res);
-          if(res.code == 200){
-            _this.auth = res.data;
-          }else{
-            Toast(res.msg)
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
   },
   methods: {
     commit(){
         let _this = this;
-        console.log(_this.$route.params.code)
+        console.log(_this.$route.params.auth)
       if (_this.firstPwd == "") {
         Toast("密码不能为空");
       } else if(_this.firstPwd !== _this.secondPwd){
         Toast("两次密码不一致");
       } else{
-           _this
-        .$post(_this.GLOBAL.base_url + "pwd", {
+        _this.$post(_this.GLOBAL.base_url + "pwd", {
           mobile: _this.phoneNum,
           password: _this.firstPwd,
-          auth: _this.auth
+          auth: _this.$route.params.auth
         })
         .then(res => {
           console.log(res);

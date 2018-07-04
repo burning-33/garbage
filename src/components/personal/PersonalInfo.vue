@@ -2,7 +2,8 @@
     <div class="personalInfo"> 
         <router-link :to="{name:'changeImg',params:{title:'更换头像',originalInfo:userInfo}}" tag="div" class="lrborder b-v-center pg10">
           <p class="flex">头像</p>
-          <div class="imgHeader"><img :src="userInfo.head" alt=""></div>  
+          <div class="imgHeader" :style="'background:url('+userInfo.head+') center / 100%;'" >
+            </div>  
           <p  class="mr10 ml5"><span class="iconfont">&#xe60d;</span></p>     
         </router-link>
         <router-link :to="{name:'nikename',params:{title:'修改昵称',originalInfo:userInfo}}" tag="div" class="lrborder b-v-center pg10">
@@ -70,7 +71,6 @@ export default {
   height: 50px;
   border-radius: 50%;
   overflow: hidden;
-  // background: #000;
 }
 .lrborder + .lrborder {
   border-top: 1px solid #eee;

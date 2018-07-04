@@ -3,8 +3,8 @@
     
     <!-- 头部 -->
     <div class="b-v-center mtb10 bgw ptb15 borderTB">
-      <div class="imgHeader mlr20">
-        <img :src="user.head" alt="">
+      <div class="imgHeader mlr20" :style="'background:url('+user.head+') center / 100%;'">
+        <!-- <img :src="user.head" alt=""> -->
       </div>
       <router-link :to="{name:'PersonalInfo',params:{title:'个人信息',userInfo:user}}" tag="div" class="b-v-center flex">
         <div class="flex">

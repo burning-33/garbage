@@ -7,7 +7,7 @@
                 <van-field
                     center
                     v-model="sms"
-                    placeholder="请输入短信验证码"
+                    placeholder="请输入验证码"
                     icon="clear"
                     @click-icon="sms = ''">
                     <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       sms: "",
-      validateCode:'',
       //倒计时
       is_show: true,
       last_time: "",
@@ -37,12 +36,13 @@ export default {
   },
   created(){
       this.from = this.$route.params.title
+      console.log(this.from)
       this.phoneNum = this.$route.params.mobile 
   },
   methods: {
     getValidateCode() {
       let _this = this;
-      if(this.from == '设置密码'){
+      if(this.from == '修改密码'){
         _this
         .$fetch(_this.GLOBAL.base_url + "sms", {
           mobile: _this.phoneNum,
@@ -52,7 +52,6 @@ export default {
           console.log(res,'密码');
           if (res.code == 200) {
             _this.is_show = !_this.is_show;
-            _this.validateCode = res.data
             _this.GLOBAL.countdown(_this);
           }
         })
@@ -69,7 +68,6 @@ export default {
           console.log(res,'手机号');
           if (res.code == 200) {
             _this.is_show = !_this.is_show;
-            _this.validateCode = res.data
             _this.GLOBAL.countdown(_this);
           }
         })
@@ -80,22 +78,53 @@ export default {
       
     },
     nextStep() {
-        console.log(this.sms)
-        console.log(this.validateCode)
+      let _this = this;
+        // console.log(this.sms)
       if (this.sms == "") {
         Toast("请填写验证码");
-      } else if (this.sms != this.validateCode) {
-        Toast("验证码不正确");
-      } else {
+      }else {
         if(this.from == '设置密码'){
-          this.$router.replace({
-            name: "setPwd",
-            params: { title: "设置密码" ,code:this.validateCode,phoneNum:_this.phoneNum}
-          });
+          _this.$fetch(_this.GLOBAL.base_url + "pwd", {
+              mobile: _this.phoneNum,
+              code: _this.sms
+            })
+            .then(res => {
+              console.log(res);
+              if (res.code == 200) {
+                this.$router.replace({
+                    name: "setPwd",
+                    params: {
+                        title: "设置密码",
+                        auth: res.data,
+                        phoneNum: _this.phoneNum
+                    }
+                });
+              } else {
+                Toast(res.msg);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         }else{
+          _this.$fetch(_this.GLOBAL.base_url + "verify", {
+          token: _this.GLOBAL.token,
+          code: _this.sms
+        })
+        .then(res => {
+          console.log(res);
+          if(res.code == 200){
+            _this.auth = res.data;
+          }else{
+            Toast(res.msg)
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
           this.$router.replace({
             name: "newPhone",
-            params: { title: "新手机号" ,code:this.validateCode}
+            params: { title: "新手机号" ,auth:_this.auth}
           });
         }
         

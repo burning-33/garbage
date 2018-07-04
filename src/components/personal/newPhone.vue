@@ -8,7 +8,7 @@
                 <van-field
                     center
                     v-model="sms"
-                    placeholder="请输入短信验证码"
+                    placeholder="请输入验证码"
                     icon="clear"
                     @click-icon="sms = ''">
                     <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
@@ -29,7 +29,6 @@ export default {
       phoneNum:'',
       sms:'',
       auth:'',
-      validateCode:'',
       //倒计时
       is_show: true,
       last_time: "",
@@ -43,23 +42,8 @@ export default {
     };
   },
   created(){
-      let _this = this;
-      _this
-        .$fetch(_this.GLOBAL.base_url + "verify", {
-          token: _this.GLOBAL.token,
-          code: _this.$route.params.code
-        })
-        .then(res => {
-          console.log(res);
-          if(res.code == 200){
-            _this.auth = res.data;
-          }else{
-            Toast(res.msg)
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      this.auth = this.$route.params.auth
+      
   },
   methods: {
     getValidateCode() {
@@ -73,7 +57,6 @@ export default {
           console.log(res,'手机号');
           if (res.code == 200) {
             _this.is_show = !_this.is_show;
-            _this.validateCode = res.data
             _this.GLOBAL.countdown(_this);
           }
         })
@@ -89,14 +72,12 @@ export default {
           Toast('手机号不能为空')
         }else if (this.sms == "") {
           Toast("请填写验证码");
-        } else if (this.sms != this.validateCode) {
-          Toast("验证码不正确");
-        } else {
+        }  else {
           _this
             .$post(_this.GLOBAL.base_url + "mobile",{
               token:_this.GLOBAL.token,
               mobile: _this.phoneNum,
-              code: Number(_this.validateCode),
+              code: Number(_this.sms),
               auth:_this.auth
             })
             .then(res => {

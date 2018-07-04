@@ -126,6 +126,8 @@
   export default {
     name: 'Ordersure',
     props:['chanpin'],
+     components:{
+    },
     data() {
       return {
         show:false,

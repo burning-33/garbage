@@ -11,7 +11,7 @@
                 <van-field
                     center
                     v-model="sms"
-                    placeholder="请输入短信验证码"
+                    placeholder="请输入验证码"
                     icon="clear"
                     @click-icon="sms = ''">
                     <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
@@ -56,10 +56,8 @@ export default {
   },
   created(){
      //设置或获取整个 URL 为字符串。
-      // console.log(window.location.href);
-    // let url = 'http://localhost:8080/register?invitation_doe=123456';
     let url = window.location.href; 
-    if (url.indexOf("?") != -1) { 
+    if (url.indexOf("?") != -1) {
         var strs = url.split("&");  
         for(var i = 0; i < strs.length; i ++) {
           this.invitation = strs[i].split("=")[1]

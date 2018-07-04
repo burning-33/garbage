@@ -21,7 +21,7 @@
         <span @click="clear">清楚所有记录</span>
       </div>
       <ul>
-        <li class="soulei" v-for="(item, index) in arr">
+        <li class="soulei" v-for="(item, index) in arr" :key="index">
           <span>{{item}}</span>
           <span class="iconfont" @click="deletes(index)" data-idx="index">&#xe716;</span>
         </li>
@@ -46,7 +46,7 @@
             waterfall-disabled="disabled"
             waterfall-offset="400"
         >
-          <li class="li" v-for="(item,index) in list" @click="goDetails(item.id)">
+          <li class="li" v-for="(item,index) in list" @click="goDetails(item.id)" :key="index">
             <img :src="item.cover" alt="">
             <div class="title">{{item.name}}</div>
             <div class="price">
@@ -57,18 +57,17 @@
         </ul>
       </div>
     </div>
-    <transition name="slide-fade">
+    <!-- <transition name="slide-fade">
       <Details
         v-if="detshow"
         @detafalse = 'detafalse'
         :detailsid = 'detailsid'
       />
-    </transition>
+    </transition> -->
   </div>
 </template>
 
 <script>
-  import Details from '../SonComponents/details.vue'
   import Vue from 'vue'
   import { Collapse, CollapseItem } from 'vant';
   import { Waterfall } from 'vant';
@@ -77,7 +76,7 @@
   export default {
     name: 'Search',
     components:{
-      Details,
+     
     },
     data() {
       return {
@@ -89,8 +88,6 @@
         neirong:'',//输入框内容
         arr:[1,2,1,3],//历史搜索
         clearShow:false,//清楚按钮
-        detshow:false,//是否显示详情页
-        detailsid:'',
         volumedown:true,//销量向下
         priceDown:true,//销量向下
         axioscanshu:'is_hot'
@@ -211,13 +208,11 @@
       },
       goDetails(id){
         console.log('000')
-        this.detshow = true;
-        this.detailsid = id
+        // this.detshow = true;
+        // this.detailsid = id
+         this.$router.push({path: '/details',query:{id:id}})
       },
-      // 商品详情页返回
-      detafalse() {
-        this.detshow = false;
-      },
+  
     },
   }
 

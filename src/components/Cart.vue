@@ -100,7 +100,18 @@
       },
     },
     methods: {
+      goDetails(id){
+        console.log(id)
+        // this.detshow = true;
+        // this.detailsid = id
+        this.$router.push({path: '/details',query:{id:id}})
+      },
+       // 商品详情页返回
+      detafalse() {
+        this.detshow = false;
+      },
       checkde:function () {
+        this.checked = []
         var length = this.bookList.length
         for(var i = 0;i <length; i++ ){
           this.checked.push(false)
@@ -246,7 +257,7 @@
       orderfalse(){
         this.ordershow = false;
         if(this.checked){
-          this.checked = []
+          this.checkde()
         }
         this.totalSelection = false
       },

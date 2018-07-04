@@ -25,59 +25,76 @@
     </div>
 </template>
 <script>
-import {Toast} from 'vant'
+import { Toast } from "vant";
 export default {
   data() {
     return {
       sms: "",
-      validateCode:'',
-      showCode:false,
+      showCode: false,
       //倒计时
       is_show: true,
       last_time: "",
       getCodetext: "获取验证码",
-      phoneNum:'',
-      from:''      
+      phoneNum: "",
+      from: ""
     };
   },
   methods: {
     getValidateCode() {
       let _this = this;
-        _this.$fetch(_this.GLOBAL.base_url + "sms", {
-            mobile: _this.phoneNum,
-            type: "pwd"
+      _this
+        .$fetch(_this.GLOBAL.base_url + "sms", {
+          mobile: _this.phoneNum,
+          type: "pwd"
         })
         .then(res => {
-            console.log(res,'密码');
-            if (res.code == 200) {
+          console.log(res, "密码");
+          if (res.code == 200) {
             _this.is_show = !_this.is_show;
-            _this.validateCode = res.data
             _this.GLOBAL.countdown(_this);
-            }
+          } else {
+            Toast(res.msg);
+          }
         })
         .catch(err => {
-            console.log(err);
+          console.log(err);
         });
-      
     },
     nextStep() {
-        console.log(this.sms)
-        console.log(this.validateCode)
-        if(!this.showCode){
-            this.showCode = true
-            this.getValidateCode()
-        }else{
-            if (this.sms == "") {
-                Toast("请填写验证码");
-            } else if (this.sms != this.validateCode) {
-                Toast("验证码不正确");
-            } else {
+        let _this = this;
+      console.log(this.sms);
+      if (!this.showCode) {
+        this.showCode = true;
+        this.getValidateCode();
+      } else {
+        if (this.sms == "") {
+          Toast("请填写验证码");
+        } else {
+          _this.$fetch(_this.GLOBAL.base_url + "pwd", {
+              mobile: _this.phoneNum,
+              code: _this.sms
+            })
+            .then(res => {
+              console.log(res);
+              if (res.code == 200) {
                 this.$router.replace({
-                name: "setPwd",
-                params: { title: "设置密码" ,code:this.validateCode,login:true,phoneNum:_this.phoneNum}
+                    name: "setPwd",
+                    params: {
+                        title: "设置密码",
+                        auth: res.data,
+                        login: true,
+                        phoneNum: _this.phoneNum
+                    }
                 });
-            }
+              } else {
+                Toast(res.msg);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         }
+      }
     }
   },
   components: {}
@@ -89,10 +106,10 @@ export default {
   .mlr38 {
     margin: 0 38px;
   }
-  .height{
-      height: 42px;
-      line-height: 42px;
-      background-color: rgb(235, 233, 233);
+  .height {
+    height: 42px;
+    line-height: 42px;
+    background-color: rgb(235, 233, 233);
   }
   .btnWidth {
     width: 290px;
@@ -105,7 +122,7 @@ export default {
   .van-cell {
     padding: 0 !important;
   }
-  
+
   .van-button--primary {
     border: 0;
   }

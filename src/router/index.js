@@ -29,6 +29,8 @@ import logistics from '@/components/personal/order/logistics'
 import toReview from '@/components/personal/order/toReview'
 import writingReview from '@/components/personal/order/writingReview'
 import Search from '@/components/Search'
+import ordersure from '@/Soncomponents/Ordersure'
+import Details from '@/Soncomponents/Details'
 Vue.use(Router);
 
 export default new Router({
@@ -198,6 +200,16 @@ export default new Router({
       path: '/Search',
       name: 'search',
       component: Search,
+    },
+    {
+      path: '/Ordersure',
+      name: 'ordersure',
+      component: ordersure,
+    },
+    {
+      path: '/Details',
+      name: 'details',
+      component: Details,
     }
   ]
 })

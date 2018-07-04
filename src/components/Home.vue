@@ -25,11 +25,7 @@
       </div>
     </div>
     <div class="h1">推荐商品 <span class="iconfont">&#xe717;</span></div>
-    <ul class="ul"
-      v-waterfall-lower="loadMore"
-      waterfall-disabled="disabled"
-      waterfall-offset="400"
-    >
+    <ul class="ul">
       <!--<lazy-component>-->
         <li class="li" v-for="(item,index) in list"   @click="goDetails(item.id)" :key="index">
           <img :src="item.imglist" alt="" class="goodsImg">
@@ -37,18 +33,10 @@
       <!--</lazy-component>-->
 
     </ul>
-    <transition name="slide-fade">
-        <Details
-          v-if="detshow"
-          @detafalse = 'detafalse'
-          :detailsid = 'detailsid'
-        />
-    </transition>
   </div>
 </template>
 
 <script>
-  import Details from '../SonComponents/details.vue'
   import Vue from 'vue'
   import Swiper from 'swiper'
   import { Swipe, SwipeItem } from 'vant';
@@ -62,7 +50,7 @@
   export default {
     name: 'Home',
     components:{
-      Details,
+     
     },
     data() {
       return {
@@ -110,9 +98,7 @@
         }, 200);
       },
       goDetails(id){
-        console.log(id)
-        this.detshow = true;
-        this.detailsid = id
+         this.$router.push({path: '/details',query:{id:id}})
       },
       // 商品详情页返回
       detafalse() {

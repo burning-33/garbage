@@ -1,7 +1,8 @@
 <template>
   <div class="details">
     <div class="detailsHeader">
-      <div @click="$emit('detafalse')" > <span class="iconfont">&#xe614;</span>返回 </div>
+      <!-- <div @click="$emit('detafalse')" > <span class="iconfont">&#xe614;</span>返回 </div> -->
+       <div @click="goHome" > <span class="iconfont">&#xe614;</span>返回 </div>
       <div class="title">商品详情</div>
       <div>...</div>
     </div>
@@ -65,7 +66,7 @@
         <div class="topBox">
           <img :src="list.goods.cover" alt="" class="img">
           <div class="rightBox">
-            <div class="describe">2121212121212121212121212166612459</div>
+            <div class="describe">{{list.goods.name}}</div>
             <div class="danjia">
               <!--<span>数量：1</span>-->
               <span>单价：￥{{unitPrice}}</span>
@@ -113,17 +114,54 @@
     <!--购物车-->
     <div class="cartMark" v-if="cartMark">
       <van-popup v-model="show1" position="bottom" :overlay="false" class="cartBox">
-        <div class="danjias">单价：￥{{unitPrice}}</div>
-        <div class="section yunsuan shuliangBox">
-          <div class="h2">购买数量</div>
-          <div class="add">
-            <span @click="reduce()">-</span>
-            <span class="nums">{{num}}</span>
-            <span @click="plus()">+</span>
+        <div class="mark">
+        <div class="topBox">
+          <img :src="list.goods.cover" alt="" class="img">
+          <div class="rightBox">
+            <div class="describe">{{list.goods.name}}</div>
+            <div class="danjia">
+              <!--<span>数量：1</span>-->
+              <span>单价：￥{{unitPrice}}</span>
+            </div>
           </div>
         </div>
-        <div class="hejiBox">合计：<span class="heji">￥{{heji}}</span></div>
-        <div class="btnBox">
+        <div class="section">
+          <div class="h2">颜色分类</div>
+          <div class="fenleiBox">
+              <span @click="fenleiBtn(index)" v-for="(item,index) in yansefenlei" :key="index" class="fenlei" :class="[isActive == index? 'isActive':'']">{{item.name}}</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="h2">规格分类</div>
+          <div class="fenleiBox">
+            <span @click="fenleipreBtn(index)" v-for="(item,index) in fenlei" :key="index"  class="fenlei fenleipri" :class="[isActiveprive == index? 'isActive':'']">{{item}}</span>
+          </div>
+        </div>
+        <div class="section yunsuan">
+          <div class="h2">购买数量</div>
+          <div class="add">
+            <span @click="reduce()" class="iconfont">&#xe643;</span>
+            <span>{{num}}</span>
+            <span @click="plus()" class="iconfont">&#xe603;</span>
+          </div>
+        </div>
+        <div class="section yunsuan">
+          <div class="h2 textleft">
+            <span>共{{num}}件商品 总价</span>
+            <span class="prices">￥{{allPrice}}</span>
+          </div>
+        </div>
+        <div class="section yunsuan">
+          <div class="h2 youhuiBox">
+            <span class="prices">优惠：￥{{discount}}</span>
+            <div>
+              <span>实付：</span>
+              <span class="prices">{{payment}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btnBox">
           <div class="cancel" @click="cancels">取消</div>
           <div class="sure" @click="sure">确定</div>
         </div>
@@ -192,14 +230,15 @@
       }
     },
     mounted: function(){
+      console.log(this.$route.query.id)
+      var ids = this.$route.query.id
       const selt = this;
-      console.log(selt.GLOBAL.discount)
       if(!selt.GLOBAL.discount){
         selt.GLOBAL.discount = 0
       }
       this.discount = selt.GLOBAL.discount
       console.log(selt.detailsid)
-      selt.$fetch(selt.GLOBAL.base_url + 'goods/' + selt.detailsid)
+      selt.$fetch(selt.GLOBAL.base_url + 'goods/' + ids)
         .then((response) => {
           console.log(response.data)
           selt.list= response.data;
@@ -234,6 +273,9 @@
     },
 
     methods: {
+        goHome(){
+          this.$router.push({path: '/'})
+      },
       obj(){
 
       },
@@ -323,7 +365,7 @@
         // Toast('加入购物车成功');
         const selt = this;
         var num = selt.num;
-        var id = selt.list.goods.id;
+        var id = selt.chanpinid;
           selt.$post(selt.GLOBAL.base_url + "cart", {token: token,a_id: id,num:num})
             .then(res => {
               console.log(res);
