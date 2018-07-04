@@ -51,6 +51,7 @@ export default {
             _this.GLOBAL.token = res.data.token;
             _this.GLOBAL.mobile = res.data.mobile;
             _this.GLOBAL.discount = res.data.discount;
+            _this.GLOBAL.nickname = res.data.nickname;
             console.log(_this.GLOBAL.token,_this.GLOBAL.mobile,_this.GLOBAL.discount)
             setTimeout(function(){
               _this.$router.replace({name: 'home',params:{title:'首页'}})

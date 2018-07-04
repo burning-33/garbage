@@ -3,6 +3,7 @@
   const token = sessionStorage.getItem('token')
   const mobile = ''
   const discount = ''
+  const nickname = ''
   //验证码倒计时
   function countdown(that) {
     var time = 60;

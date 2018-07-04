@@ -75,7 +75,6 @@ export default {
           console.log(err);
         });
       }
-      
     },
     nextStep() {
       let _this = this;

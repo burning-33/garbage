@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="homeHeader">
+    <div class="homeHeader b-v-center">
       <router-link :to="{name: 'search'}" tag="div" class="sousuo">
           <van-icon name="search" />
       </router-link>
@@ -8,8 +8,13 @@
         <div class="iconfont">&#xe611;</div>
         <div class="sign">登录</div>
       </div>
-      <div class="signBox" v-else>
-        <div class="sign">用户名</div>
+      <div v-else class="flex b-center">
+        <div class="signBox  tc flex" >
+          <div class="sign">{{name}}</div>
+        </div>
+        <div>
+          <div @click="logout" class=" bgGreen colorw pg2 bR5 fs12">注销</div>
+        </div>
       </div>
     </div>
     <div class="banner">
@@ -59,7 +64,8 @@
         disabled: false,
         detshow:false,//是否显示详情页
         detailsid:'',
-        denglu:true
+        denglu:true,
+        name:''
       }
     },
     directives: {
@@ -67,8 +73,9 @@
     },
     mounted: function () {
       const selt = this;
-      console.log(selt.GLOBAL.discount)
-      if(selt.GLOBAL.discount){
+      console.log(selt.GLOBAL.nickname)
+      if(selt.GLOBAL.token){
+        selt.name = selt.GLOBAL.nickname;
         this.denglu = false
       }else{
         this.denglu = true
@@ -88,6 +95,11 @@
        console.log(this.GLOBAL.token)
     },
     methods: {
+      logout(){
+        sessionStorage.clear();
+        this.denglu = true;
+        this.$router.go(0);
+      },
       loadMore() {
         this.disabled = true;
         setTimeout(() => {

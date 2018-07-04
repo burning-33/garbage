@@ -1,7 +1,7 @@
 <template>
     <div class="nikename">
         <div class="bR5 btnWidth mg20 pg10 bgf3">
-            <input class="bgf3" v-model="nickname" type="text" placeholder="请输入昵称"/>
+            <input class="bgf3 inputName" v-model="nickname" type="text" placeholder="请输入昵称"/>
         </div>
         <button class="bgGreen btnCommit" @click="commit">保存</button>
         <ymDialog ref="dialog" :modal="modal" />
@@ -43,6 +43,7 @@ export default {
           console.log(res);
           if (res.code == 200) {
             _this.$refs.dialog.confirm().then(()=>{
+              _this.GLOBAL.nickname = _this.nickname;
                 _this.$router.replace(
                     {name:'PersonalInfo',params:{title:'个人信息'}}
                 )
@@ -72,6 +73,9 @@ export default {
       ::-webkit-input-placeholder{
           color: #a3a3a3;
       }
+  }
+  .inputName{
+    width: 100%;
   }
   .btnCommit {
     width: 290px;
