@@ -18,15 +18,15 @@ axios.interceptors.request.use(
     } else{
       config.data = qs.stringify(config.data);      
     }
-    if(config.url == base_url + 'upload'){
-      config.headers = {
-        'Content-Type':'multipart/form-data'
-      };
-    }else{
+    // if(config.url == base_url + 'upload'){
+    //   config.headers = {
+    //     'Content-Type':'multipart/form-data'
+    //   };
+    // }else{
       config.headers = {
         'Content-Type':'application/x-www-form-urlencoded'
       };
-    }
+    // }
     return config; 
   },
   error => {
