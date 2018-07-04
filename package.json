@@ -5,7 +5,7 @@
   "author": "ouzhenzheng <515315427@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js ",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
@@ -19,6 +19,7 @@
     "qs": "^6.5.2",
     "swiper": "^4.3.3",
     "vant": "^1.1.8",
+    "vconsole": "^3.2.0",
     "vue": "^2.5.2",
     "vue-infinite-loading": "^2.3.1",
     "vue-router": "^3.0.1",

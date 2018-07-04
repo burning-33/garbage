@@ -83,7 +83,7 @@ export default {
       if (this.sms == "") {
         Toast("请填写验证码");
       }else {
-        if(this.from == '设置密码'){
+        if(this.from == '修改密码'){
           _this.$fetch(_this.GLOBAL.base_url + "pwd", {
               mobile: _this.phoneNum,
               code: _this.sms
@@ -115,6 +115,10 @@ export default {
           console.log(res);
           if(res.code == 200){
             _this.auth = res.data;
+            this.$router.replace({
+            name: "newPhone",
+            params: { title: "新手机号" ,auth:res.data}
+          });
           }else{
             Toast(res.msg)
           }
@@ -122,10 +126,7 @@ export default {
         .catch(err => {
           console.log(err);
         });
-          this.$router.replace({
-            name: "newPhone",
-            params: { title: "新手机号" ,auth:_this.auth}
-          });
+          
         }
         
       }

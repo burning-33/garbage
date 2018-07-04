@@ -11,7 +11,7 @@
                     <van-field
                         center
                         v-model="sms"
-                        placeholder="请输入短信验证码"
+                        placeholder="请输入验证码"
                         icon="clear"
                         @click-icon="sms = ''">
                         <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
@@ -50,6 +50,7 @@ export default {
         .then(res => {
           console.log(res, "密码");
           if (res.code == 200) {
+            this.showCode = true;
             _this.is_show = !_this.is_show;
             _this.GLOBAL.countdown(_this);
           } else {
@@ -64,7 +65,6 @@ export default {
         let _this = this;
       console.log(this.sms);
       if (!this.showCode) {
-        this.showCode = true;
         this.getValidateCode();
       } else {
         if (this.sms == "") {
@@ -77,6 +77,7 @@ export default {
             .then(res => {
               console.log(res);
               if (res.code == 200) {
+
                 this.$router.replace({
                     name: "setPwd",
                     params: {

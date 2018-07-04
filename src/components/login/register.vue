@@ -114,7 +114,7 @@ export default {
           mobile: _this.phoneNum,
           code: _this.sms,
           password: _this.inputPwd,
-          invitation_doe:_this.invitation
+          invitation_code:_this.invitation
         })
         .then(res => {
           console.log(res);

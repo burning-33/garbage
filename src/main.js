@@ -13,7 +13,7 @@ import Cropper from 'cropperjs';
 import global_ from './components/Global'//引用文件
 Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
 import 'vant/lib/vant-css/index.css';
-// axios.defaults.baseURL ='http://garbage.xxw360.com/api/';
+import vconsole from 'vconsole'
 // 定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$fetch=fetch;

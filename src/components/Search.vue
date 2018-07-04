@@ -134,7 +134,8 @@
         selt.$fetch(selt.GLOBAL.base_url + 'goods',
             {
               keyword:neirong,
-              order:this.axioscanshu
+              order:this.axioscanshu,
+              p:1
             },)
           .then((response) => {
             console.log(response)

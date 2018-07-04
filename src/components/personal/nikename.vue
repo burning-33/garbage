@@ -24,8 +24,8 @@ export default {
     };
   },
   created(){
-      console.log(this.$route.params.originalInfo)
       this.user = this.$route.params.originalInfo
+      this.nickname = this.$route.params.originalInfo.nickname
   },
   methods: {
     commit(){
@@ -34,8 +34,7 @@ export default {
       if(_this.nickname == _this.user.nickname){
         Toast('昵称与之前相同')
       }else{
-        _this
-        .$put(_this.GLOBAL.base_url + "member", {
+        _this.$put(_this.GLOBAL.base_url + "member", {
           token:_this.GLOBAL.token,
           nickname: _this.nickname,
           head: ''

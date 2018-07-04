@@ -12,7 +12,7 @@
                     icon="clear"
                     @click-icon="sms = ''">
                     <van-button @click="getValidateCode" v-if="is_show"  slot="button" size="normal" type="primary" class="bgGreen">{{getCodetext}}</van-button>
-                    <van-button v-else slot="button" size="normal" type="primary" class="bg999">已发送{{last_time}}秒</van-button>
+                    <van-button v-else slot="button" size="normal" class="bg999">已发送{{last_time}}秒</van-button>
                 </van-field>
             </van-cell-group>
         </div>
@@ -41,9 +41,9 @@ export default {
       }
     };
   },
-  created(){
-      this.auth = this.$route.params.auth
-      
+  mounted() {
+    this.auth = this.$route.params.auth;
+    console.log(this.auth)
   },
   methods: {
     getValidateCode() {
@@ -58,6 +58,8 @@ export default {
           if (res.code == 200) {
             _this.is_show = !_this.is_show;
             _this.GLOBAL.countdown(_this);
+          }else{
+            Toast(res.msg)
           }
         })
         .catch(err => {

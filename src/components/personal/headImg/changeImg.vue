@@ -18,9 +18,6 @@
         <button class="bgGreen btnCommit" @click="uploadHeadImg">更换头像</button>
         <input type="file" id="change" name="image" accept="image/*" @change="change" class="hiddenInput">
         <label for="change"></label>
-        <form >
-          <!-- <input type="file"  class="hiddenInput" v-model=""> -->
-        </form>
     </div>
   </div>
 </template>
@@ -144,7 +141,7 @@ export default {
          imgUrl = _this.headerImage.replace('data:image/png;base64,','')
        console.log(imgUrl)
       _this.$post(_this.GLOBAL.base_url + 'upload',{
-          image: imgUrl
+          image: _this.headerImage
         })
         .then(res => {
           console.log(res);

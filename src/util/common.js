@@ -27,7 +27,6 @@ axios.interceptors.request.use(
         'Content-Type':'application/x-www-form-urlencoded'
       };
     }
-    
     return config; 
   },
   error => {
