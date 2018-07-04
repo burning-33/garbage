@@ -15,16 +15,19 @@
         <div class="imgHeader mlr20">
             <img :src="headerImage" alt="">
         </div> 
-        <button class="bgGreen btnCommit" @click="uploadHeadImg">更换头像</button>
+        <button v-if="upload" class="bgGreen btnCommit" @click="uploadHeadImg">更换头像</button>
+        <button v-else class="bgGreen btnCommit" @click="nextStep">确认</button>
         <input type="file" id="change" name="image" accept="image/*" @change="change" class="hiddenInput">
         <label for="change"></label>
     </div>
+    <ymDialog ref="dialog" :modal="modal" />
   </div>
 </template>
  
 <script>
 import Cropper from 'cropperjs'
 import {Toast} from 'vant'
+import ymDialog from "../../common/dialog";
 export default {
   components: {
     
@@ -36,7 +39,15 @@ export default {
       cropper:'',
       croppable:false,
       panel:false,
-      url:''
+      url:'',
+      image:'',
+      upload:true,
+      modal: {
+        confirmText: "ok",
+        contentText: "更改成功",
+        red: false,
+        showCancel: false
+      }
     }
   },
   created(){
@@ -56,9 +67,36 @@ export default {
       }
     });
   },
+  components:{
+    ymDialog
+  },
   methods: {
     uploadHeadImg: function () {
       this.$el.querySelector('.hiddenInput').click()
+    },
+    nextStep(){
+      let _this = this;
+      _this.$put(_this.GLOBAL.base_url + "member", {
+          token:_this.GLOBAL.token,
+          nickname: '',
+          head: _this.headerImage
+        })
+        .then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            _this.$refs.dialog.confirm().then(()=>{
+                _this.$router.replace(
+                    {name:'PersonalInfo',params:{title:'个人信息'}}
+                )
+          }).catch(()=>{
+            })
+          }else{
+            Toast(res.msg)
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     getObjectURL (file) {
       var url = null ; 
@@ -69,7 +107,7 @@ export default {
       } else if (window.webkitURL!=undefined) { // webkit or chrome
         url = window.webkitURL.createObjectURL(file) ;
       }
-      return url ;
+      return url;
     },
     change (e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -98,7 +136,8 @@ export default {
         // Round
         roundedCanvas = this.getRoundedCanvas(croppedCanvas);
  
-        this.headerImage = roundedCanvas.toDataURL();
+        // this.headerImage = roundedCanvas.toDataURL();
+        this.image = roundedCanvas.toDataURL();
         // console.log('img',roundedCanvas.toDataURL())
         this.postImg()
         
@@ -137,16 +176,15 @@ export default {
     postImg () {
       let _this = this;
        let imgUrl = ''
-       console.log(_this.headerImage)
-         imgUrl = _this.headerImage.replace('data:image/png;base64,','')
-       console.log(imgUrl)
       _this.$post(_this.GLOBAL.base_url + 'upload',{
-          image: _this.headerImage
+          image: this.image
         })
         .then(res => {
           console.log(res);
           if (res.code == 200) {
-            alert('上传成功')
+            console.log('上传成功')
+            _this.headerImage = res.data;
+            _this.upload = false;
           }else{
             Toast(res.msg)
           }

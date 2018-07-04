@@ -34,7 +34,7 @@ export default {
       last_time: "",
       getCodetext: "获取验证码",
       modal: {
-        confirmText: "ok",
+        confirmText: "立即登录",
         contentText: "更换成功",
         red: false,
         showCancel: false
@@ -86,10 +86,11 @@ export default {
               console.log(res,'修改手机号');
               if (res.code == 200) {
                 _this.$refs.dialog.confirm().then(()=>{
-                    _this.$router.replace(
-                        {name:'PersonalInfo',params:{title:'个人信息'}}
-                    )
-                }).catch(()=>{ 
+                  _this.$router.replace(
+                    {name:'login',params:{title:'登录'}}
+                  )
+                  sessionStorage.clear();
+                }).catch(()=>{
                 })
               }else{
                 Toast(res.msg);

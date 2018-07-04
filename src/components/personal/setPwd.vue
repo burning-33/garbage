@@ -23,7 +23,7 @@ export default {
       phoneNum:'',
       auth:'',
       modal: {
-        confirmText: "ok",
+        confirmText: "立即登录",
         contentText: "密码修改成功",
         red: false,
         showCancel: false
@@ -33,14 +33,6 @@ export default {
   created(){
       let _this = this;
       _this.phoneNum = _this.$route.params.phoneNum;
-      if(_this.$route.params.login){
-        _this.modal = {
-          confirmText: "立即登录",
-          contentText: "密码修改成功",
-          red: false,
-          showCancel: false
-        }
-      }
   },
   methods: {
     commit(){
@@ -60,18 +52,11 @@ export default {
           console.log(res);
           if(res.code == 200){
             _this.$refs.dialog.confirm().then(()=>{
-                console.log(123)
-                if(_this.$route.params.login){
                   _this.$router.replace(
                     {name:'login',params:{title:'登录'}}
                   )
-                }else{
-                  _this.$router.replace(
-                      {name:'PersonalInfo',params:{title:'个人信息'}}
-                  )
-                }
+                  sessionStorage.clear();
             }).catch(()=>{
-                console.log(456)
             })
           }else{
             Toast(res.msg)
