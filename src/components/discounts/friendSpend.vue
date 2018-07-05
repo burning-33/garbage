@@ -1,5 +1,5 @@
 <template>
-  <div class="mySpend">
+  <div class="friendSpend">
       <!-- 头部 -->
     <div class="b-center mtb10 bgw ptb15 borderTB myHead">
       <p class="fs16 colorb mr40">总消费金额</p>
@@ -132,7 +132,7 @@ export default {
 
 
 <style lang="less" scoped>
-.mySpend {
+.friendSpend {
   background: #eee;
   overflow: hidden;
   height: 100%;

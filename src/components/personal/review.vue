@@ -35,7 +35,7 @@
       </div>
       <infinite-loading @infinite="getreviewList" spinner="waveDots" ref="InfiniteLoading">
         <span slot="no-results">
-          已经到底了~
+          您还没有评论任何订单~
         </span>
           <span slot="no-more">
           已经到底了~

@@ -124,6 +124,12 @@ export default {
               }else{
                 console.log('false')              
               }
+            }else {
+              Toast(res.msg)
+              if(res.code == 404){
+                sessionStorage.clear();
+                this.$router.go(0);
+              }
             }
       })
       .catch(err => {

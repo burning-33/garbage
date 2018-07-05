@@ -1,10 +1,19 @@
 <template>
   <div class="comment">
     <div class="detailsHeader">
-      <div @click="$emit('commentfalse')" > <span class="iconfont">&#xe614;</span>返回 </div>
+      <div @click="fanhui" > <span class="iconfont">&#xe614;</span>返回 </div>
       <div class="title">商品评价</div>
-      <div>...</div>
     </div>
+     <vue-better-scroll
+    style="height:500px" 
+    class="wrapper"
+    ref="scroll"
+    :scrollbar="scrollbarObj"
+    :pullDownRefresh="pullDownRefreshObj"
+    :pullUpLoad="pullUpLoadObj"
+    :startY="parseInt(startY)"
+    @pullingDown="onPullingDown"
+    @pullingUp="onPullingUp">
     <div class="box">
       <div class="wrapper" ref="wrapper">
         <ul class="content">
@@ -23,11 +32,10 @@
             <div>{{item.content}}</div>
             <div class="time">{{item.create_time}}</div>
           </li>
-          <p class="bottom-tip" ref="bTip">查看更多</p>
         </ul>
-        <div class="loading-wrapper"></div>
       </div>
     </div>
+    </vue-better-scroll>
   </div>
 </template>
 
@@ -37,13 +45,18 @@
   import { Lazyload } from 'vant';
   import { List } from 'vant';
   import BScroll from 'better-scroll'
-
+  import VueBetterScroll from 'vue2-better-scroll'
+  Vue.use (VueBetterScroll)
   Vue.use(List);
   Vue.use(Lazyload);
   Vue.use(Popup);
+   let count = 1
   export default {
     name: 'Comment',
-    props:['idNum','comment'],
+    props:['comment'],
+    components:{
+     VueBetterScroll
+    },
     data() {
       return {
         list:[],//传输过来的产品数据
@@ -52,7 +65,31 @@
         pages:'',
         loading: false,
         finished: false,
-        pageIndex:0
+        pageIndex:0,
+        idNum:'',
+        pages:'',
+           // 这个配置可以开启滚动条，默认为 false。当设置为 true 或者是一个 Object 的时候，都会开启滚动条，默认是会 fade 的
+        scrollbarObj: {
+          fade: false
+        },
+        // 这个配置用于做下拉刷新功能，默认为 false。当设置为 true 或者是一个 Object 的时候，可以开启下拉刷新，可以配置顶部下拉的距离（threshold） 来决定刷新时机以及回弹停留的距离（stop）
+        pullDownRefreshObj: {
+          threshold: 90,
+          stop: 40
+        },
+        // 这个配置用于做上拉加载功能，默认为 false。当设置为 true 或者是一个 Object 的时候，可以开启上拉加载，可以配置离底部距离阈值（threshold）来决定开始加载的时机
+        pullUpLoadObj: {
+          threshold: 0,
+          txt: {
+            more: '加载更多',
+            noMore: '没有更多数据了'
+          }
+        },
+        startY: 0,  // 纵轴方向初始化位置
+        scrollToX: 0,
+        scrollToY: 0,
+        scrollToTime: 700,
+        items: []
       }
     },
     computed: {
@@ -71,7 +108,6 @@
           }
         }
       },
-
       loadData() {
         const selt = this;
         const id = selt.idNum;
@@ -87,68 +123,13 @@
             // selt.list = response.data.list
             selt.pages = response.data.all_page
 
-
-            if (selt.list.length >= 8) {
-              selt.hasMore = false
-            }
-            selt.$nextTick(() => {
-              if (!selt.scroll) {
-                selt.scroll = new BScroll(selt.$refs.wrapper, {
-                  // click: true,
-                  scrollY: true,
-                  // pullUpLoad:{
-                  //   threshold: -70, // 负值是当上拉到超过低部 70px；正值是距离底部距离 时，
-                  // }
-                })
-                selt.scroll.on('touchend', (pos) => {
-                  // 下拉动作
-                  if (pos.y > 50) {
-                    selt.loadData()
-                  }
-                })
-              } else {
-                selt.scroll.refresh()
-              }
-            })
-            // selt.$nextTick(() => {
-            //   if (!selt.scroll) {
-            //     selt.scroll = new BScroll(selt.$refs.wrapper, {
-            //       // click: true,
-            //       // scrollY: true,
-            //       // pullUpLoad:{
-            //       //   threshold: -70, // 负值是当上拉到超过低部 70px；正值是距离底部距离 时，
-            //       // }
-            //     })
-            //
-            //     selt.scroll.on('touchEnd', () => {
-            //       if (selt.scroll.y <= (selt.scroll.maxScrollY - 30)) {
-            //         selt.$refs.bTip.innerText = '加载中.....'
-            //         selt.offset += 3;
-            //         selt.$nextTick(() => {
-            //           // 恢复文本值
-            //           selt.$refs.bTip.innerText = '查看更多'
-            //
-            //           // 向列表添加数据
-            //           selt.loadData();
-            //           // 加载更多后,重新计算滚动区域高度
-            //           selt.scroll.refresh();
-            //         })
-            //       }
-            //     })
-            //   } else {
-            //     console.log('重新计算')
-            //     selt.scroll.refresh()
-            //
-            //   }
-            //
-            // })
           })
-      }
-    },
-    mounted(){
-      const selt = this;
+      },
+      // 模拟数据请求
+      getData () {
+         const selt = this;
       const id = selt.idNum;
-      selt.$fetch(selt.GLOBAL.base_url + 'comment',{g_id:selt.idNum,p:'1',row:'8'})
+      selt.$fetch(selt.GLOBAL.base_url + 'comment',{g_id:selt.idNum,p:count,row:'8'})
         .then((response) => {
           console.log(response)
           for(var i = 0;i < response.data.list.length;i++){
@@ -160,23 +141,81 @@
           selt.pages = response.data.all_page
 
         })
+      },
+      onPullingDown () {
+        // 模拟下拉刷新
+        console.log('下拉刷新')
+        this.idNum = this.$route.params.idNum
+        count = 1
+        const selt = this;
+      const id = selt.idNum;
+      selt.$fetch(selt.GLOBAL.base_url + 'comment',{g_id:selt.idNum,p:count,row:'8'})
+        .then((response) => {
+          console.log(response)
+          for(var i = 0;i < response.data.list.length;i++){
+            if(response.data.list[i].num == ''){
+              response.data.list[i].num = '0'
+            }
+          }
+          selt.list = response.data.list
+          selt.pages = response.data.all_page
+        selt.$refs.scroll.forceUpdate(true)
+        })
+      },
+      onPullingUp () {
+        // 模拟上拉 加载更多数据
+        console.log('上拉加载')
+        count ++
+              const selt = this;
+      const id = selt.idNum;
+      selt.$fetch(selt.GLOBAL.base_url + 'comment',{g_id:selt.idNum,p:count,row:'8'})
+        .then((response) => {
+          console.log(response)
+          for(var i = 0;i < response.data.list.length;i++){
+            if(response.data.list[i].num == ''){
+              response.data.list[i].num = '0'
+            }
+          }
+          selt.list =selt.list.concat(response.data.list)
+          selt.pages = response.data.all_page
+        if(count< this.pages){
+              selt.$refs.scroll.forceUpdate(true)
+            }else {
+              selt.$refs.scroll.forceUpdate(false)
+            }
+        })
+      },
+      fanhui(){
+        console.log('000')
+        this.$router.push({path: '/details',query:{id:this.idNum}})
+      }
     },
-    created(){
-      // this.loadData()
-    }
+    mounted(){
+      console.log(this.$route.params.idNum)
+      this.idNum = this.$route.params.idNum
+       this.onPullingDown()
+      // const selt = this;
+      // const id = selt.idNum;
+      // selt.$fetch(selt.GLOBAL.base_url + 'comment',{g_id:selt.idNum,p:'1',row:'8'})
+      //   .then((response) => {
+      //     console.log(response)
+      //     for(var i = 0;i < response.data.list.length;i++){
+      //       if(response.data.list[i].num == ''){
+      //         response.data.list[i].num = '0'
+      //       }
+      //     }
+      //     selt.list = response.data.list
+      //     selt.pages = response.data.all_page
+
+      //   })
+    },
+    
   }
 
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang='less'>
-  .wrapper{
-    width: 100%;
-    position:absolute;
-    top: 50px;
-    overflow: hidden;
-    z-index: 1;
-  }
   .content{
     height:100%;
   }
@@ -193,12 +232,11 @@
   .box{
     width: 100%;
     overflow-y: auto;
-    margin-top: 50px;
   }
   .comment{
-    position: fixed;
-    top: 0;
-    left: 0;
+    // position: fixed;
+    // top: -50px;
+    // left: 0;
     width: 100%;
     height: 100%;
     z-index: 999;
@@ -218,9 +256,9 @@
     box-sizing: border-box;
     font-size: 20px;
     position: relative;
-    /*position: fixed;*/
-    /*top: 0;*/
-    /*left: 0;*/
+    position: fixed;
+    top: 0;
+    left: 0;
     .iconfont{
       color: #ffffff;
     }

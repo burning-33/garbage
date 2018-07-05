@@ -131,6 +131,9 @@ export default {
   .borderccc {
     border: 1px solid #ccc;
   }
+  .bg999 {
+    background-color: #999;
+  }
   .btnWidth + .btnWidth {
     margin-top: 25px;
   }

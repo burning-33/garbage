@@ -5,7 +5,7 @@
                 <p class="fs16 color333 plr8 height mr15">+86</p>
                 <input class="flex" type="number" v-model="phoneNum" placeholder="请输入11位手机号"/>
             </div>
-            <p v-if="!showCode" class="color333 fs12 mt8">为保证您得账号安全，我们将向您的手机发送验证码</p>
+            <p v-if="!showCode" class="color333 fs12 mt8">为保证您的账号安全，我们将向您的手机发送验证码</p>
             <div v-else class="borderccc bR5 btnWidth">
                 <van-cell-group class="ml5">
                     <van-field

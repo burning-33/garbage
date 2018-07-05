@@ -1,6 +1,16 @@
 <template>
   <div class="search">
-    <div>
+      <vue-better-scroll
+    style="height:500px" 
+    class="wrapper"
+    ref="scroll"
+    :scrollbar="scrollbarObj"
+    :pullDownRefresh="pullDownRefreshObj"
+    :pullUpLoad="pullUpLoadObj"
+    :startY="parseInt(startY)"
+    @pullingDown="onPullingDown"
+    @pullingUp="onPullingUp">
+       <div>
       <div class="searchHeader">
         <input type="text" class="sousuo" v-model="neirong">
         <van-icon name="search" class="sousuoIcon" />
@@ -40,13 +50,9 @@
           <span v-if="!priceDown" class="iconfont">&#xe78f;</span>
         </div>
       </div>
-      <div>
-        <ul class="ul"
-            v-waterfall-lower="loadMore"
-            waterfall-disabled="disabled"
-            waterfall-offset="400"
-        >
-          <li class="li" v-for="(item,index) in list" @click="goDetails(item.id)" :key="index">
+    </div>
+    <ul ref="list" class="list-content ul">
+        <li class="li" v-for="(item,index) in items" @click="goDetails(item.id)" :key="index">
             <img :src="item.cover" alt="">
             <div class="title">{{item.name}}</div>
             <div class="price">
@@ -54,16 +60,9 @@
               <span class="oldprice">￥{{item.price}}</span>
             </div>
           </li>
-        </ul>
-      </div>
-    </div>
-    <!-- <transition name="slide-fade">
-      <Details
-        v-if="detshow"
-        @detafalse = 'detafalse'
-        :detailsid = 'detailsid'
-      />
-    </transition> -->
+    </ul>
+</vue-better-scroll>
+
   </div>
 </template>
 
@@ -71,12 +70,16 @@
   import Vue from 'vue'
   import { Collapse, CollapseItem } from 'vant';
   import { Waterfall } from 'vant';
+  import BScroll from 'better-scroll'
+  import VueBetterScroll from 'vue2-better-scroll'
+  Vue.use (VueBetterScroll)
   Vue.use(Waterfall);
   Vue.use(Collapse).use(CollapseItem);
+  let count = 1
   export default {
     name: 'Search',
     components:{
-     
+     VueBetterScroll
     },
     data() {
       return {
@@ -90,11 +93,38 @@
         clearShow:false,//清楚按钮
         volumedown:true,//销量向下
         priceDown:true,//销量向下
-        axioscanshu:'is_hot'
+        axioscanshu:'is_hot',
+        pages:'',
+           // 这个配置可以开启滚动条，默认为 false。当设置为 true 或者是一个 Object 的时候，都会开启滚动条，默认是会 fade 的
+        scrollbarObj: {
+          fade: false
+        },
+        // 这个配置用于做下拉刷新功能，默认为 false。当设置为 true 或者是一个 Object 的时候，可以开启下拉刷新，可以配置顶部下拉的距离（threshold） 来决定刷新时机以及回弹停留的距离（stop）
+        pullDownRefreshObj: {
+          threshold: 90,
+          stop: 40
+        },
+        // 这个配置用于做上拉加载功能，默认为 false。当设置为 true 或者是一个 Object 的时候，可以开启上拉加载，可以配置离底部距离阈值（threshold）来决定开始加载的时机
+        pullUpLoadObj: {
+          threshold: 0,
+          txt: {
+            more: '加载更多',
+            noMore: '没有更多数据了'
+          }
+        },
+        startY: 0,  // 纵轴方向初始化位置
+        scrollToX: 0,
+        scrollToY: 0,
+        scrollToTime: 700,
+        items: []
+      
       }
     },
     mounted: function () {
-      this.huoqu()
+      this.onPullingDown()
+    },
+    created () {
+      // this.huoqu()
     },
     computed:{
       clearShows(){
@@ -113,34 +143,6 @@
       clearneirong(){
         this.neirong=''
         this.clearShow = false
-      },
-      huoqu(){
-        // const selt = this;
-        // var neirong = selt.selt
-        // axios.get('http://garbage.xxw360.com/api/goods',{params:
-        //     {
-        //       keyword:neirong,
-        //       order:this.axioscanshu
-        //     },
-        // })
-        //   .then(function (res) {
-        //   console.log(res.data)
-        //   selt.list = res.data.data
-        // }).catch(function (err) {
-        //   console.error('请求错误')
-        // })
-        const selt = this;
-        var neirong = selt.neirong
-        selt.$fetch(selt.GLOBAL.base_url + 'goods',
-            {
-              keyword:neirong,
-              order:this.axioscanshu,
-              p:1
-            },)
-          .then((response) => {
-            console.log(response)
-            selt.list = response.data.list
-          })
       },
       // 分类查询点击
       actClass(e){
@@ -175,7 +177,7 @@
         }else {
           this.priceDown = true;
         }
-        this.huoqu();
+        this.getData ();
         console.log(this.neirong)
       },
       // 加载更多
@@ -195,8 +197,7 @@
         }else {
           this.searchShow = false
           this.clearShow = true
-
-          this.huoqu()
+          this.getData ()
         }
       },
       // 删除历史记录
@@ -213,7 +214,70 @@
         // this.detailsid = id
          this.$router.push({path: '/details',query:{id:id}})
       },
-  
+       // 滚动到页面顶部
+      scrollTo () {
+        this.$refs.scroll.scrollTo(this.scrollToX, this.scrollToY, this.scrollToTime)
+      },
+      // 模拟数据请求
+      getData () {
+         const selt = this;
+        var neirong = selt.neirong
+        selt.$fetch(selt.GLOBAL.base_url + 'goods',
+            {
+              keyword:neirong,
+              order:this.axioscanshu,
+              p:count,
+              row:8
+            },)
+          .then((response) => {
+            console.log(response)
+            selt.items = response.data.list 
+            selt.pages =  response.data.all_page
+          })
+      },
+      onPullingDown () {
+        // 模拟下拉刷新
+        console.log('下拉刷新')
+        count = 1
+         var neirong = this.neirong
+        this.$fetch(this.GLOBAL.base_url + 'goods',
+            {
+              keyword:neirong,
+              order:this.axioscanshu,
+              p:count,
+              row:8
+            },)
+          .then((response) => {
+            console.log(response)
+             this.items = response.data.list 
+             this.pages =  response.data.all_page
+            this.$refs.scroll.forceUpdate(true)
+          })
+      },
+      onPullingUp () {
+        // 模拟上拉 加载更多数据
+        console.log('上拉加载')
+        count ++
+            var neirong = this.neirong
+        this.$fetch(this.GLOBAL.base_url + 'goods',
+            {
+              keyword:neirong,
+              order:this.axioscanshu,
+              p:count,
+              row:8
+            },)
+          .then((response) => {
+            console.log(response)
+            this.items = this.items.concat(response.data.list) 
+               
+             this.pages =  response.data.all_page
+            if(count< this.pages){
+              this.$refs.scroll.forceUpdate(true)
+            }else {
+              this.$refs.scroll.forceUpdate(false)
+            }
+          })
+      }
     },
   }
 

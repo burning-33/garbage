@@ -79,7 +79,7 @@ export default {
       _this.$put(_this.GLOBAL.base_url + "member", {
           token:_this.GLOBAL.token,
           nickname: '',
-          head: _this.headerImage
+          head: _this.image
         })
         .then(res => {
           console.log(res);
@@ -177,13 +177,14 @@ export default {
       let _this = this;
        let imgUrl = ''
       _this.$post(_this.GLOBAL.base_url + 'upload',{
-          image: this.image
+          image: _this.image
         })
         .then(res => {
           console.log(res);
           if (res.code == 200) {
             console.log('上传成功')
-            _this.headerImage = res.data;
+            _this.headerImage = 'http://garbage.xxw360.com'+res.data;
+            _this.image = res.data;
             _this.upload = false;
           }else{
             Toast(res.msg)
@@ -255,7 +256,6 @@ export default {
 #changeImg .container {
     z-index: 99;
     position: fixed;
-    padding-top: 60px;
     left: 0;
     top: 50px;
     right: 0;
@@ -273,11 +273,9 @@ export default {
 }
  
 .cropper-container {
-  width: 360px;
-    height: 174px;
   font-size: 0;
   line-height: 0;
- 
+ max-height: 400px;
   position: relative;
  
   -webkit-user-select: none;
@@ -302,6 +300,7 @@ export default {
   max-height: none !important;
   width: 100%;
   height: 100%;
+  max-height:500px;
   image-orientation: 0deg
 }
  

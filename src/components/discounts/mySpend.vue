@@ -24,7 +24,7 @@
                 </van-row>
                 <infinite-loading @infinite="getspendInfo" spinner="waveDots" ref="InfiniteLoading">
                     <span slot="no-results">
-                      已经到底了~
+                      当前还没有消费记录~
                     </span>
                       <span slot="no-more">
                       已经到底了~
@@ -58,8 +58,8 @@ export default {
       let _this = this;
       _this.$fetch(_this.GLOBAL.base_url + "consumption", {
           token: _this.GLOBAL.token,
-          p:1,
-          row:7
+          p:_this.page,
+          row:_this.pageSize
           })
         .then(res => {
           console.log('我的消费',res);
@@ -94,7 +94,7 @@ export default {
       height:93px;
   }
   .scroll{
-    height: 56vh;
+    height: 64vh;
     overflow: auto;
   }
   .colorEF{

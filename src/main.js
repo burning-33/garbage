@@ -14,6 +14,8 @@ import global_ from './components/Global'//引用文件
 Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
 import 'vant/lib/vant-css/index.css';
 import vconsole from 'vconsole'
+import VueBetterScroll from 'vue2-better-scroll'
+// axios.defaults.baseURL ='http://garbage.xxw360.com/api/';
 // 定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$fetch=fetch;

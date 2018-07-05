@@ -1,5 +1,12 @@
 <template>
   <div class="CartBox">
+  <vue-better-scroll
+    style="height:100%" 
+    class="wrapper"
+    ref="scroll"
+    :scrollbar="scrollbarObj"
+    :startY="parseInt(startY)"
+>
     <div class="cart" v-if="Cartshow">
       <div v-if="shows">
         <div class="ulBox">
@@ -26,7 +33,9 @@
               </div>
             </li>
           </ul>
+          
         </div>
+        
         <div class="bottomBox">
           <div  @click="totalSelectionf" class="quanxuan">
             <van-checkbox v-model="totalSelection" >全选</van-checkbox>
@@ -45,7 +54,10 @@
           </router-link>
         </div>
       </div>
+    
+    
     </div>
+    </vue-better-scroll>
     <transition name="slide-fade">
       <Ordersure
         v-if="ordershow"
@@ -53,6 +65,7 @@
         :chanpin = 'chanpin'
       />
     </transition>
+
   </div>
 
 </template>
@@ -64,6 +77,8 @@
   import { Dialog } from 'vant';
   import { Toast } from 'vant';
   import Ordersure from '../Soncomponents/Ordersure'
+  import VueBetterScroll from 'vue2-better-scroll'
+  Vue.use (VueBetterScroll)
   Vue.use(Button);
   Vue.use(Checkbox).use(CheckboxGroup);
   export default {
@@ -88,6 +103,14 @@
         clickButton: '点击按钮',
         ordershow:false,
         chanpin:[], //产品详情传入确认订单
+         startY: 0,  // 纵轴方向初始化位置
+        scrollToX: 0,
+        scrollToY: 0,
+        scrollToTime: 700,
+                   // 这个配置可以开启滚动条，默认为 false。当设置为 true 或者是一个 Object 的时候，都会开启滚动条，默认是会 fade 的
+        scrollbarObj: {
+          fade: false
+        },
       }
     },
     computed: {
@@ -310,7 +333,7 @@
     padding-left: 10px;
     background: white;
     position: fixed;
-    bottom: 50px;
+    bottom: 10px;
     left: 0;
     margin-top: 20px;
     color: #000000;

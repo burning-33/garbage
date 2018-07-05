@@ -31,6 +31,7 @@ import writingReview from '@/components/personal/order/writingReview'
 import Search from '@/components/Search'
 import ordersure from '@/Soncomponents/Ordersure'
 import Details from '@/Soncomponents/Details'
+import Comment from '@/Soncomponents/Comment'
 Vue.use(Router);
 
 export default new Router({
@@ -210,6 +211,11 @@ export default new Router({
       path: '/Details',
       name: 'details',
       component: Details,
+    },
+    {
+      path: '/Comment',
+      name: 'comment',
+      component: Comment,
     }
   ]
 })

@@ -40,7 +40,7 @@
       </div>
       <infinite-loading @infinite="getOrderList" spinner="waveDots" ref="InfiniteLoading">
         <span slot="no-results">
-          已经到底了~
+          当前没有相关订单~
         </span>
           <span slot="no-more">
           已经到底了~

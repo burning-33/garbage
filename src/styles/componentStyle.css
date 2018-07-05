@@ -10,8 +10,11 @@
 .van-field__icon {
   right: 10px;
 }
-.van-field__button .van-button--primary {
+.van-cell-group .van-field__body .van-field__button .van-button--primary {
   background-color: #81b824;
+}
+.van-cell-group .van-field__body .van-field__button .van-button--normal {
+  padding: 0 20px;
 }
 .detail .van-button__text {
   color: #6c6c6c;

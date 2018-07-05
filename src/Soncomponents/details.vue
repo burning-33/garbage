@@ -4,9 +4,16 @@
       <!-- <div @click="$emit('detafalse')" > <span class="iconfont">&#xe614;</span>返回 </div> -->
        <div @click="goHome" > <span class="iconfont">&#xe614;</span>返回 </div>
       <div class="title">商品详情</div>
-      <div>...</div>
     </div>
-    <div class="banner">
+    <vue-better-scroll
+    style="height:calc(100%)" 
+    class="wrapper"
+    ref="scroll"
+    :scrollbar="scrollbarObj"
+    :startY="parseInt(startY)"
+>
+    
+    <div class="banner" >
       <van-swipe >
         <van-swipe-item v-if="list.goods.imglist" v-for="(image, index) in list.goods.imglist" :key="index">
           <img :src="image" alt="" class="bannerimg">
@@ -49,6 +56,7 @@
     <div class="xiangqing">商品详情</div>
     <div class="productImg" v-html="list.goods.content">
     </div>
+        </vue-better-scroll>
     <div class="buy">
       <div class="add" @click="addCart">
         <span class="iconfont">&#xe655;</span>
@@ -174,15 +182,6 @@
         :chanpin = 'chanpin'
       />
     </transition>
-    <!--评论-->
-    <transition name="slide-fade">
-      <Comment
-        v-if="commentShow"
-        @commentfalse = 'commentfalse'
-        :idNum="idNum"
-        :comment = "comment"
-      />
-    </transition>
   </div>
 </template>
 
@@ -195,7 +194,8 @@
   import { Toast } from 'vant';
   import { Dialog } from 'vant';
   import { Popup } from 'vant';
-
+  import VueBetterScroll from 'vue2-better-scroll'
+  Vue.use (VueBetterScroll)
   Vue.use(Popup);
   Vue.use(Swipe).use(SwipeItem);
   export default {
@@ -203,7 +203,6 @@
     props:['imgid','detailsid'],
     components:{
       Ordersure,
-      Comment
     },
     data() {
       return {
@@ -227,6 +226,14 @@
         commentShow:false,//评论列表
         idNum:'',//评论列表id
         chanpin:[], //产品详情传入确认订单
+         startY: 0,  // 纵轴方向初始化位置
+        scrollToX: 0,
+        scrollToY: 0,
+        scrollToTime: 700,
+                   // 这个配置可以开启滚动条，默认为 false。当设置为 true 或者是一个 Object 的时候，都会开启滚动条，默认是会 fade 的
+        scrollbarObj: {
+          fade: false
+        },
       }
     },
     mounted: function(){
@@ -386,6 +393,11 @@
       },
       //去订单详情
       goOrder(){
+          const token = sessionStorage.getItem("token");
+          if(!token){
+            Toast('请登录');
+            return
+          }else{
         this.show = false
         this.ordershow = true;
         this.chanpin = [];
@@ -394,12 +406,15 @@
         objs.num =this.num
         this.chanpin.push(objs)
         console.log(this.chanpin)
+          }
+
       },
       // 去评论列表
       goComment(){
-        this.idNum = this.list.goods.id
-        this.show = false
-        this.commentShow = true
+        // this.idNum = this.list.goods.id
+        // this.show = false
+        // this.commentShow = true
+        this.$router.push({ name: 'comment', params: { idNum: this.list.goods.id}})
       }
     },
   }
@@ -410,6 +425,11 @@
 <style scoped lang='less'>
   .van-popup{
     border-radius: 20px 20px 0 0;
+  }
+  .details{
+    .wrapper{
+    margin-bottom: 50px
+    }
   }
   img{
     width: 100%;
@@ -461,7 +481,7 @@
       }
       .btnBox{
         width: 100%;
-        height: 40px;
+        height: 50px;
         display: flex;
         div{
           width: 50%;
@@ -469,7 +489,7 @@
           text-align: center;
           font-size: 16px;
           color: #ffffff;
-          line-height: 40px;
+          line-height: 50px;
         }
         .cancel{
           background: #bbbbbb;
@@ -556,9 +576,6 @@
       display: flex;
       justify-content: space-between;
       box-sizing: border-box;
-      span{
-        /*margin-right: 20px;*/
-      }
     }
     .topBox{
       width: 100%;
