@@ -164,6 +164,9 @@
     border-radius: 14px;
     text-align: center;
   }
+  .wx {
+    display:flex;
+  }
   .qq{
     background: #4dafea;
     .iconfont{
