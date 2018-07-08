@@ -74,7 +74,10 @@
       }
     },
     methods: {
-      share(){
+      test () {
+	console.log(124);
+      },
+       share(){
         this.show = true
       },
       cancel(){
