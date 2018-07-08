@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="CartBox">
   <vue-better-scroll
     style="height:100%" 
@@ -583,6 +583,9 @@
       }
 
     }
+	.addClass{
+	width:100px;
+	}
   }
 
 </style>
