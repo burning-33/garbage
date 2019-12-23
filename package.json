@@ -18,7 +18,7 @@
     "jquery": "^3.3.1",
     "qs": "^6.5.2",
     "swiper": "^4.3.3",
-    "vant": "^1.1.8",
+    "vant": "^2.1.8",
     "vconsole": "^3.2.0",
     "vue": "^2.5.2",
     "vue-infinite-loading": "^2.3.1",
